@@ -36,10 +36,16 @@
     <ClInclude Include="Hitable.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="AxisAlignmentBoundingBox.h">
+    <ClInclude Include="Texture.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Texture.h">
+    <ClInclude Include="Material.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Geomery.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Instance.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -56,7 +62,13 @@
     <ClCompile Include="RGBImage.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="AxisAlignmentBoundingBox.cpp">
+    <ClCompile Include="Hitable.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Geomery.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

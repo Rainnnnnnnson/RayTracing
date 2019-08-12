@@ -13,6 +13,8 @@ class Vector;
 class Color;
 class Ray;
 
+constexpr float PI = 3.1415926f;
+
 /*
 	多线程函数
 	生成[0,1]的随机数

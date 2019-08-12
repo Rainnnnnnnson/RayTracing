@@ -29,7 +29,7 @@ Application::Application(unsigned width, unsigned height) : buffer(width, height
 	hwnd = CreateWindowEx(
 		0,                              // Optional window styles.
 		CLASS_NAME,                     // Window class
-		L"RayTracing",    // Window text
+		L"RayTracing",                  // Window text
 		dwstyle,                        // Window style
 		// Size and position
 		CW_USEDEFAULT, CW_USEDEFAULT, w, h,
