@@ -6,7 +6,7 @@
 
 class Application {
 public:
-	Application(unsigned width, unsigned height);
+	Application(int width, int height);
 	~Application();
 	RGBImage GetImage(const wchar_t* fileName) const;
 	void SetWindowsText(const wchar_t* text);

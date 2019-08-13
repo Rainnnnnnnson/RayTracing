@@ -1,4 +1,4 @@
-#include "Geomery.h"
+#include "Geometry.h"
 #include "Instance.h"
 using std::make_shared;
 Sphere::Sphere(Point center, float radius, shared_ptr<Material> material)

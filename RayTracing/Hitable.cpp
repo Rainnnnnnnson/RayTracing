@@ -94,6 +94,9 @@ struct BVHNode : public Hitable {
 public:
 	BVHNode(vector<shared_ptr<Hitable>>::iterator begin, vector<shared_ptr<Hitable>>::iterator end, float time0, float time1)
 		: left(nullptr), right(nullptr) {
+		/*
+			∏˘æ›÷·¿¥≈≈–Ú
+		*/
 		int axis = static_cast<int>(Random() * 2.999f);
 		std::sort(begin, end, [&](const unique_ptr<Hitable>& h0, const unique_ptr<Hitable>& h1) {
 			AxisAlignmentBoundingBox leftBox;

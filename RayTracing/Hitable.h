@@ -12,6 +12,9 @@ using std::make_unique;
 	hitPoint 击中点
 	normal 法线
 	emit 自发光
+
+	与原版不一样 原版的设计不太好
+	这里将材质得到的结果直接放在这里 避免外部调用
 */
 class HitRecord {
 public:

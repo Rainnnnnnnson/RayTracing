@@ -2,6 +2,7 @@
 #include "Hitable.h"
 #include "Material.h"
 using std::shared_ptr;
+using std::make_shared;
 
 class Sphere : public Hitable {
 public:
@@ -14,6 +15,11 @@ private:
 	float radius;
 };
 
+/*
+	从center0 线性平移至 center1
+	会根据时间来确定中心点的位置
+	包围盒的要覆盖所有将会移动到的地方
+*/
 class MovingSphere : public Hitable {
 public:
 	MovingSphere(Point center0, Point center1, float time0, float time1, float radius, shared_ptr<Material> material);

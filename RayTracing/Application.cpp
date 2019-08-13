@@ -4,7 +4,7 @@
 #include <string>
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-Application::Application(unsigned width, unsigned height) : buffer(width, height) {
+Application::Application(int width, int height) : buffer(width, height) {
 	//用这个来获取句柄
 	hInstance = GetModuleHandle(NULL);
 
@@ -21,7 +21,7 @@ Application::Application(unsigned width, unsigned height) : buffer(width, height
 	//不允许最大化 不允许拉伸窗口 保证刚好是bitMap的大小
 	DWORD dwstyle = WS_OVERLAPPEDWINDOW ^ WS_THICKFRAME ^ WS_MAXIMIZEBOX;
 
-	RECT r{0, 0, static_cast<int>(width), static_cast<int>(height)};
+	RECT r{0, 0, width, height};
 	AdjustWindowRectEx(&r, dwstyle, 0, 0);
 	int w = r.right - r.left;
 	int h = r.bottom - r.top;

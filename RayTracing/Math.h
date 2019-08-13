@@ -34,6 +34,9 @@ public:
 	float X() const;
 	float Y() const;
 	float Z() const;
+	float& X();
+	float& Y();
+	float& Z();
 	float operator[](int index) const;
 	float& operator[](int index);
 
@@ -57,6 +60,9 @@ public:
 	float X() const;
 	float Y() const;
 	float Z() const;
+	float& X();
+	float& Y();
+	float& Z();
 	float operator[](int index) const;
 	float& operator[](int index);
 
@@ -82,6 +88,9 @@ public:
 	float R() const;
 	float G() const;
 	float B() const;
+	float& R();
+	float& G();
+	float& B();
 	float operator[](int index) const;
 	float& operator[](int index);
 

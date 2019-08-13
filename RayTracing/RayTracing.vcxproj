@@ -129,7 +129,8 @@
   <ItemGroup>
     <ClInclude Include="Application.h" />
     <ClInclude Include="Assertion.h" />
-    <ClInclude Include="Geomery.h" />
+    <ClInclude Include="Camera.h" />
+    <ClInclude Include="Geometry.h" />
     <ClInclude Include="Hitable.h" />
     <ClInclude Include="Instance.h" />
     <ClInclude Include="Material.h" />
@@ -141,8 +142,11 @@
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Assertion.cpp" />
-    <ClCompile Include="Geomery.cpp" />
+    <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Geometry.cpp" />
     <ClCompile Include="Hitable.cpp" />
+    <ClCompile Include="Instance.cpp" />
+    <ClCompile Include="Main.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Math.cpp" />
     <ClCompile Include="RGBImage.cpp" />

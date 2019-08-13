@@ -6,8 +6,7 @@ using std::vector;
 template<typename Element>
 class Texture2D {
 public:
-	Texture2D(int w, int h)
-		: width(w), height(h), elements(w * h, Element()) {
+	Texture2D(int w, int h) : width(w), height(h), elements(static_cast<size_t>(w)* h, Element()) {
 		assertion(w > 0);
 		assertion(h > 0);
 	}

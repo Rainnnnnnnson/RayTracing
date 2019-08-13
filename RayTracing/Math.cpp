@@ -41,6 +41,18 @@ float Point::Z() const {
 	return element[2];
 }
 
+float& Point::X() {
+	return element[0];
+}
+
+float& Point::Y() {
+	return element[1];
+}
+
+float& Point::Z() {
+	return element[2];
+}
+
 float Point::operator[](int index) const {
 	return element[index];
 }
@@ -86,6 +98,18 @@ float Vector::Y() const {
 }
 
 float Vector::Z() const {
+	return element[2];
+}
+
+float& Vector::X() {
+	return element[0];
+}
+
+float& Vector::Y() {
+	return element[1];
+}
+
+float& Vector::Z() {
 	return element[2];
 }
 
@@ -150,6 +174,18 @@ float Color::G() const {
 }
 
 float Color::B() const {
+	return element[2];
+}
+
+float& Color::R() {
+	return element[0];
+}
+
+float& Color::G() {
+	return element[1];
+}
+
+float& Color::B() {
 	return element[2];
 }
 

@@ -7,11 +7,11 @@
 
 class FlipNormal : public Hitable {
 public:
-	FlipNormal(unique_ptr<Hitable> p);
+	FlipNormal(unique_ptr<Hitable> hitable);
 	virtual bool Hit(Ray ray, float tMin, float tMax, HitRecord& record) const override;
 	virtual bool BoundingBox(float time0, float time1, AxisAlignmentBoundingBox& box) const override;
 private:
-	unique_ptr<Hitable> p;
+	unique_ptr<Hitable> hitable;
 };
 
 class Translate : public Hitable {
@@ -26,12 +26,10 @@ private:
 
 class RotateYAxis : public Hitable {
 public:
-	RotateYAxis(unique_ptr<Hitable> p, float angle);
+	RotateYAxis(unique_ptr<Hitable> hitable, float angle);
 	virtual bool Hit(Ray ray, float tMin, float tMax, HitRecord& record) const override;
 	virtual bool BoundingBox(float time0, float time1, AxisAlignmentBoundingBox& box) const override;
 private:
-	unique_ptr<Hitable> ptr;
-	float sinTheta;
-	float cosTheta;
-	AxisAlignmentBoundingBox bbox;
+	unique_ptr<Hitable> hitable;
+	float angle;
 };
