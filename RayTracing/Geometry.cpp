@@ -4,13 +4,6 @@ using std::make_shared;
 Sphere::Sphere(Point center, float radius, shared_ptr<Material> material)
 	: center(center), radius(radius), material(std::move(material)) {}
 
-void GetSphereUV(Point p, float& u, float& v) {
-	float phi = atan2(p.Z(), p.X());
-	float theta = asin(p.Y());
-	u = 1.0f - (phi + PI) / (2.0f * PI);
-	v = (theta + PI / 2.0f) / PI;
-}
-
 bool Sphere::Hit(Ray ray, float tMin, float tMax, HitRecord& record) const {
 	Vector co = ray.Origin() - center;
 	float a = ray.Direction().Dot(ray.Direction());
@@ -28,13 +21,7 @@ bool Sphere::Hit(Ray ray, float tMin, float tMax, HitRecord& record) const {
 		} else {
 			return false;
 		}
-		record.t = t;
-		record.hitPoint = ray.PointAtParamter(t);
-		record.normal = (record.hitPoint - center) * (1.0f / radius);
-		float u;
-		float v;
-		GetSphereUV((Point(0.0f, 0.0f, 0.0f) +(record.hitPoint - center)) / radius, u, v);
-		record.emit = material->Emitted(u, v, record.hitPoint);
+		record = {const_cast<Sphere*>(this), ray, t};
 		return true;
 	}
 	return false;
@@ -43,6 +30,14 @@ bool Sphere::Hit(Ray ray, float tMin, float tMax, HitRecord& record) const {
 bool Sphere::BoundingBox(float time0, float time1, AxisAlignmentBoundingBox& box) const {
 	box = AxisAlignmentBoundingBox(center - Vector(radius, radius, radius), center + Vector(radius, radius, radius));
 	return true;
+}
+
+bool Sphere::Calculate(Ray ray, float t, Ray& scattered, Color& emited, Color& attenuation) const {
+	CalculateData data;
+	data.ray = ray;
+	data.hitPoint = ray.PointAtParamter(t);
+	data.normal = data.hitPoint - center;
+	return material->Calculate(data, scattered, emited, attenuation);
 }
 
 MovingSphere::MovingSphere(Point center0, Point center1, float time0, float time1, float radius, shared_ptr<Material> material)
@@ -59,7 +54,7 @@ bool MovingSphere::BoundingBox(float time0, float time1, AxisAlignmentBoundingBo
 	return true;
 }
 
-XYRect::XYRect(float x0, float x1, float y0, float y1, float z, shared_ptr<Material> material)
+XYRect::XYRect(float x0, float x1, float y0, float y1, float z, unique_ptr<Material> material)
 	: x0(x0), x1(x1), y0(y0), y1(y1), z(z), material(std::move(material)) {}
 
 bool XYRect::Hit(Ray ray, float tMin, float tMax, HitRecord& record) const {
@@ -72,12 +67,7 @@ bool XYRect::Hit(Ray ray, float tMin, float tMax, HitRecord& record) const {
 	if (x < x0 || x > x1 || y < y0 || y > y1) {
 		return false;
 	}
-	record.t = t;
-	record.hitPoint = ray.PointAtParamter(t);
-	record.normal = Vector{0.0f, 0.0f, 1.0f};
-	float u = (x - x0) / (x1 - x0);
-	float v = (y - y0) / (y1 - y0);
-	record.emit = material->Emitted(u, v, record.hitPoint);
+	record = {const_cast<XYRect*>(this), ray, t};
 	return true;
 }
 
@@ -86,7 +76,7 @@ bool XYRect::BoundingBox(float time0, float time1, AxisAlignmentBoundingBox& box
 	return true;
 }
 
-XZRect::XZRect(float x0, float x1, float z0, float z1, float y, shared_ptr<Material> material)
+XZRect::XZRect(float x0, float x1, float z0, float z1, float y, unique_ptr<Material> material)
 	: x0(x0), x1(x1), z0(z0), z1(z1), y(y), material(std::move(material)) {}
 
 bool XZRect::Hit(Ray ray, float tMin, float tMax, HitRecord& record) const {
@@ -99,12 +89,7 @@ bool XZRect::Hit(Ray ray, float tMin, float tMax, HitRecord& record) const {
 	if (x < x0 || x > x1 || z < z0 || z > z1) {
 		return false;
 	}
-	record.t = t;
-	record.hitPoint = ray.PointAtParamter(t);
-	record.normal = Vector{0.0f, 0.0f, 1.0f};
-	float u = (x - x0) / (x1 - x0);
-	float v = (z - z0) / (z1 - z0);
-	record.emit = material->Emitted(u, v, record.hitPoint);
+	record = {const_cast<XZRect*>(this), ray, t};
 	return true;
 }
 
@@ -113,7 +98,7 @@ bool XZRect::BoundingBox(float time0, float time1, AxisAlignmentBoundingBox& box
 	return true;
 }
 
-YZRect::YZRect(float y0, float y1, float z0, float z1, float x, shared_ptr<Material> material)
+YZRect::YZRect(float y0, float y1, float z0, float z1, float x, unique_ptr<Material> material)
 	: y0(y0), y1(y1), z0(z0), z1(z1), x(x), material(std::move(material)) {}
 
 bool YZRect::Hit(Ray ray, float tMin, float tMax, HitRecord& record) const {
@@ -126,12 +111,7 @@ bool YZRect::Hit(Ray ray, float tMin, float tMax, HitRecord& record) const {
 	if (y < y0 || y > y1 || z < z0 || z > z1) {
 		return false;
 	}
-	record.t = t;
-	record.hitPoint = ray.PointAtParamter(t);
-	record.normal = Vector{0.0f, 0.0f, 1.0f};
-	float u = (y - y0) / (y1 - y0);
-	float v = (z - z0) / (z1 - z0);
-	record.emit = material->Emitted(u, v, record.hitPoint);
+	record = {const_cast<YZRect*>(this), ray, t};
 	return true;
 }
 
@@ -140,7 +120,7 @@ bool YZRect::BoundingBox(float time0, float time1, AxisAlignmentBoundingBox& box
 	return true;
 }
 
-Box::Box(Point pMin, Point pMax, shared_ptr<Material> material)
+Box::Box(Point pMin, Point pMax, unique_ptr<Material> material)
 	: pMin(pMin), pMax(pMax), list(InitList(std::move(material))) {}
 
 bool Box::Hit(Ray ray, float tMin, float tMax, HitRecord& record) const {

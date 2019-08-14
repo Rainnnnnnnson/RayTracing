@@ -3,29 +3,24 @@
 #include <memory>
 #include <vector>
 using std::vector;
+using std::shared_ptr;
+using std::make_shared;
 using std::unique_ptr;
 using std::make_unique;
 
-/*
-	记录Hit后的结果
-	t 代表 Point + t * Direction 中的t
-	hitPoint 击中点
-	normal 法线
-	emit 自发光
+class Hitable;
 
-	与原版不一样 原版的设计不太好
-	这里将材质得到的结果直接放在这里 避免外部调用
+/* 
+	hitable 被击中物体 
+	ray 原本射入的光线
+	t 距离
 */
-class HitRecord {
-public:
-	HitRecord();
-	HitRecord(float t, Point hitPoint, Vector normal, Color emit);
-public:
+struct HitRecord {
+	Hitable* hitable;
+	Ray ray;
 	float t;
-	Point hitPoint;
-	Vector normal;
-	Color emit;
 };
+
 
 /*
 	包围盒
@@ -55,12 +50,26 @@ private:
 
 class Hitable {
 public:
+	/*
+		这里和原版不一样
+		筛选出最小的 t 
+		下一次计算调用 record.hitable.Caculate()
+	*/
 	virtual bool Hit(Ray ray, float tMin, float tMax, HitRecord& record) const = 0;
 	/*
 		只会在构造BVHTree的时候调用一次
 		返回false 表示没有实现边界盒 或者 无法获取边界盒子
 	*/
 	virtual bool BoundingBox(float time0, float time1, AxisAlignmentBoundingBox& box) const = 0;
+	/*
+		通过 t 计算出下一次递归所需要的数据
+		HitList 和 BVHTree 不实现这个功能
+		调用 record.hitable.Caculate();
+
+		返回false 代表没有射出需要继续递归的光线
+		emited 不受影响 bool的影响
+	*/
+	virtual bool Calculate(Ray ray, float t, Ray& scattered, Color& emited, Color& attenuation) const = 0;
 };
 
 /*
@@ -71,6 +80,7 @@ public:
 	HitList(vector<unique_ptr<Hitable>> hitables);
 	virtual bool Hit(Ray ray, float tMin, float tMax, HitRecord& record) const override;
 	virtual bool BoundingBox(float time0, float time1, AxisAlignmentBoundingBox& box) const override;
+	virtual bool Calculate(Ray ray, float t, Ray& scattered, Color& emited, Color& attenuation) const override;
 private:
 	vector<unique_ptr<Hitable>> hitables;
 };
@@ -80,6 +90,10 @@ private:
 */
 class BVHTree : public Hitable {
 public:
+	/*
+		time0 time1要包含最大范围的时间
+		否则盒子边界不正确
+	*/
 	BVHTree(vector<unique_ptr<Hitable>> hitables, float time0, float time1);
 	virtual bool Hit(Ray ray, float tMin, float tMax, HitRecord& record) const override;
 
@@ -90,6 +104,7 @@ public:
 		使用构造器中的time0和time1来确定范围
 	*/
 	virtual bool BoundingBox(float time0, float time1, AxisAlignmentBoundingBox& box) const override;
+	virtual bool Calculate(Ray ray, float t, Ray& scattered, Color& emited, Color& attenuation) const override;
 private:
 	unique_ptr<Hitable> node;
 };

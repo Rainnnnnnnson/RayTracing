@@ -1,41 +1,32 @@
 #pragma once
 #include "Hitable.h"
 #include "Texture.h"
+
+struct CalculateData {
+	Ray ray; 
+	Point hitPoint;
+	Vector normal;
+};
+
 class Material {
 public:
 
 	/*
 		散射光线
+		返回false 没有光线
 		若出现系数相加则使用概率实现
 		保证反射光线永远只有一条
+		scattered   进行下一次递归的光线
+		emitted     自发光颜色
 		attenuation 递归时的衰弱系数
-		scattered 进行下一次递归的光线
 	*/
-	virtual bool Scatter(Ray ray, HitRecord record, Color& attenuation, Ray& scattered) const = 0;
-
-	/*
-		自发光使用
-		默认情况 Color(0.0f,0.0f,0.0f)
-		u v 用于纹理
-		p 用于噪音 湍流
-		不一定使用 uv 和 p
-	*/
-	virtual Color Emitted(float u, float v, Point p) const;
-};
-
-class DiffuseLight : public Material {
-public:
-	DiffuseLight(unique_ptr<Texture> texture);
-	virtual bool Scatter(Ray ray, HitRecord record, Color& attenuation, Ray& scattered) const override;
-	virtual Color Emitted(float u, float v, Point p) const;
-private:
-	unique_ptr<Texture> emit;
+	virtual bool Calculate(const CalculateData& data, Ray& scattered, Color& emitted, Color& attenuation) const = 0;
 };
 
 class Lambertian : public Material {
 public:
 	Lambertian(unique_ptr<Texture> albedo);
-	virtual bool Scatter(Ray ray, HitRecord record, Color& attenuation, Ray& scattered) const override;
+	virtual bool Calculate(const CalculateData& data, Ray& scattered, Color& emitted, Color& attenuation) const override;
 private:
 	unique_ptr<Texture> albedo;
 };
@@ -43,7 +34,7 @@ private:
 class Metal : public Material {
 public:
 	Metal(Color albedo, float fuzzier);
-	virtual bool Scatter(Ray ray, HitRecord record, Color& attenuation, Ray& scattered) const override;
+	virtual bool Calculate(const CalculateData& data, Ray& scattered, Color& emitted, Color& attenuation) const override;
 private:
 	Color albedo;
 	float fuzzier;
@@ -52,15 +43,23 @@ private:
 class Dielectric : public Material {
 public:
 	Dielectric(float refractive);
-	virtual bool Scatter(Ray ray, HitRecord record, Color& attenuation, Ray& scattered) const override;
+	virtual bool Calculate(const CalculateData& data, Ray& scattered, Color& emitted, Color& attenuation) const override;
 private:
 	float refractive;
 };
 
+class DiffuseLight : public Material {
+public:
+	DiffuseLight(unique_ptr<Texture> texture);
+	virtual bool Calculate(const CalculateData& data, Ray& scattered, Color& emitted, Color& attenuation) const override;
+private:
+	unique_ptr<Texture> emit;
+};
+
 class Iostropic : public Material {
 public:
-	Iostropic(Texture* p);
-	virtual bool Scatter(Ray ray, HitRecord record, Color& attenuation, Ray& scattered) const override;
+	Iostropic(unique_ptr<Texture> p);
+	virtual bool Calculate(const CalculateData& data, Ray& scattered, Color& emitted, Color& attenuation) const override;
 private:
-	Texture* albedo;
+	unique_ptr<Texture> albedo;
 };

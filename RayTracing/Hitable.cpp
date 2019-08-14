@@ -1,13 +1,6 @@
 #include "Hitable.h"
 #include "Assertion.h"
 #include <cmath>
-using std::shared_ptr;
-using std::make_shared;
-
-HitRecord::HitRecord() : t(0.0f) {}
-
-HitRecord::HitRecord(float t, Point hitPoint, Vector normal, Color emit)
-	: t(t), hitPoint(hitPoint), normal(normal), emit(emit) {}
 
 AxisAlignmentBoundingBox::AxisAlignmentBoundingBox() : minAxis(0.0f, 0.0f, 0.0f), maxAxis(0.0f, 0.0f, 0.0f) {}
 
@@ -85,6 +78,10 @@ bool HitList::BoundingBox(float time0, float time1, AxisAlignmentBoundingBox& bo
 		box = AxisAlignmentBoundingBox(box, tempBox);
 	}
 	return true;
+}
+
+bool HitList::Calculate(Ray ray, float t, Ray& scattered, Color& emited, Color& attenuation) const {
+	throw std::exception("此函数无作用");
 }
 
 /*
@@ -180,5 +177,9 @@ bool BVHTree::Hit(Ray ray, float tMin, float tMax, HitRecord& record) const {
 
 bool BVHTree::BoundingBox(float time0, float time1, AxisAlignmentBoundingBox& box) const {
 	return node->BoundingBox(time0, time1, box);
+}
+
+bool BVHTree::Calculate(Ray ray, float t, Ray& scattered, Color& emited, Color& attenuation) const {
+	throw std::exception("此函数无作用");
 }
 

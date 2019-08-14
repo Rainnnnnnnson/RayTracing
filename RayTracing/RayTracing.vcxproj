@@ -136,6 +136,7 @@
     <ClInclude Include="Material.h" />
     <ClInclude Include="Math.h" />
     <ClInclude Include="RGBImage.h" />
+    <ClInclude Include="Special.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Texture2D.h" />
   </ItemGroup>
@@ -150,6 +151,8 @@
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Math.cpp" />
     <ClCompile Include="RGBImage.cpp" />
+    <ClCompile Include="Special.cpp" />
+    <ClCompile Include="Texture.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
