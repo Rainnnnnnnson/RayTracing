@@ -126,7 +126,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 		主线程轮询
 	*/
 
-	std::chrono::steady_clock::time_point t0 = std::chrono::steady_clock::now();
+	std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
 	while (application.Continue()) {
 		{
 			std::lock_guard<mutex> lock(imageLock);
@@ -142,19 +142,30 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
 			}
 			/*
-				设置 光线数量 和 运行时间
+				window标题 显示 光线总数 和 运行时间
 			*/
-			
+			auto delta = std::chrono::steady_clock::now() - start;
 			std::wstring s;
 			s.reserve(50);
 			s.append(L"RayTracing   RayCount : ");
 			s.append(std::to_wstring(mainCaculateCount));
 			s.append(L"   TotalTime : ");
-			std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 			auto t1 = std::chrono::high_resolution_clock::now();
-			auto seconds = (std::chrono::duration_cast<std::chrono::seconds>(t1 - t0) % 60).count();
-			auto minutes = std::chrono::duration_cast<std::chrono::minutes>(t1 - t0).count();
+			auto seconds = (std::chrono::duration_cast<std::chrono::seconds>(delta) % 60).count();
+			auto minutes = (std::chrono::duration_cast<std::chrono::minutes>(delta) % 60).count();
+			auto hours = std::chrono::duration_cast<std::chrono::hours>(delta).count();
+			//小时
+			if (hours < 10) {
+				s.append(L"0");
+			}
+			s.append(std::to_wstring(hours));
+			//分钟
+			s.append(L":");
+			if (minutes < 10) {
+				s.append(L"0");
+			}
 			s.append(std::to_wstring(minutes));
+			//秒
 			s.append(L":");
 			if (seconds < 10) {
 				s.append(L"0");
@@ -162,6 +173,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 			s.append(std::to_wstring(seconds));
 			application.SetWindowsText(s.c_str());
 		}
+		std::this_thread::yield();
 	}
 
 	/*
