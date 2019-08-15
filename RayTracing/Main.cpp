@@ -55,7 +55,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 	/*
 		设置相机参数
 	*/
-	Point lookFrom(0.0f, 0.0f, -20.0f);
+	Point lookFrom(0.0f, 1.0f, -4.0f);
 	Point lookAt(0.0f, 0.0f, 0.0f);
 	float fous = 10.0f;
 	float aperture = 0.0f;
@@ -68,18 +68,16 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 	shared_ptr<Lambertian> lambertian = make_shared<Lambertian>(make_unique<ConstantTexture>(Color(0.5f, 0.5f, 0.5f)));
 
 	vector<unique_ptr<Hitable>> hitables;
-	//hitables.emplace_back(make_unique<Sphere>(Point(0.0f, -1000.0f, 0.0f), 1000.0f, lambertian));
-	//hitables.emplace_back(make_unique<Sphere>(Point(0.0f, 1.0f, 0.0f), 1.0f, lambertian));
+	hitables.emplace_back(make_unique<Sphere>(Point(0.0f, 0.0f, 1.0f), 0.5f, lambertian));
+	hitables.emplace_back(make_unique<Sphere>(Point(0.0f, -100.5f, 1.0f), 100.0f, lambertian));
 
 	auto hitList = HitList(std::move(hitables));
 	//BVHTree bvhTree(std::move(hitables), 0.0f, 1.0f);
 
 	/*
-		我的电脑只有四核心
 		布置每个线程的任务
 		任务都是一样的
 	*/
-	constexpr int threadCount = 4;
 	auto threadTask = [&]() {
 		Texture2D<Color> threadSingleImage(width, height);
 		while (!exit) {
@@ -116,8 +114,10 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 	};
 	/*
 		线程开始
+		我的电脑只有四个线程
 	*/
-	vector<thread> threadPool(1);
+	constexpr int threadCount = 4;
+	vector<thread> threadPool(threadCount);
 	for (auto& t : threadPool) {
 		t = thread(threadTask);
 	}

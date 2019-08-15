@@ -7,7 +7,7 @@ RGBColor::RGBColor(unsigned char r, unsigned char g, unsigned char b) : element{
 RGBColor::RGBColor(Color color) : element{0, 0, 0} {
 	color = 255.0f * color;
 	for (int i = 0; i < 3; i++) {
-		element[i] = static_cast<unsigned char>(std::clamp(color[0], 0.0f, 255.0f));
+		element[i] = static_cast<unsigned char>(std::clamp(color[i], 0.0f, 255.0f));
 	}
 }
 
