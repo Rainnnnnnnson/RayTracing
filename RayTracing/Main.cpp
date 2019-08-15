@@ -15,7 +15,7 @@ using std::mutex;
 using std::thread;
 using std::atomic;
 
-Color GetPixelColor(Ray ray, Hitable& hits, int depth = 0);
+Color GetPixelColor(Ray ray, Hitable& hits, int depth);
 
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 					_In_ LPWSTR lpCmdLine, _In_ int nShowCmd) {
@@ -55,22 +55,24 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 	/*
 		设置相机参数
 	*/
-	Point lookFrom{278.0f, 278.0f, -800.0f};
-	Point lookAt{278.0f, 278.0f, 0.0f};
+	Point lookFrom(0.0f, 0.0f, -20.0f);
+	Point lookAt(0.0f, 0.0f, 0.0f);
 	float fous = 10.0f;
 	float aperture = 0.0f;
-	float vfov = 40.0f;
-	Camera camera(lookFrom, lookAt, {0.0f, 1.0f, 0.0f}, vfov, aspect, aperture, fous, 0.0f, 1.0f);
+	float vfov = 45.0f;
+	Camera camera(lookFrom, lookAt, Vector(0.0f, 1.0f, 0.0f), vfov, aspect, aperture, fous, 0.0f, 1.0f);
 	
 	/*
 		设置场景
 	*/
-	shared_ptr<Lambertian> lambertian = make_shared<Lambertian>(make_unique<ConstantTexture>(0.5f, 0.5f, 0.5f));
+	shared_ptr<Lambertian> lambertian = make_shared<Lambertian>(make_unique<ConstantTexture>(Color(0.5f, 0.5f, 0.5f)));
 
 	vector<unique_ptr<Hitable>> hitables;
-	hitables.emplace_back(make_unique<Sphere>(Point(0.0f, 1.0f, 0.0f), 1.0f, lambertian));
+	//hitables.emplace_back(make_unique<Sphere>(Point(0.0f, -1000.0f, 0.0f), 1000.0f, lambertian));
+	//hitables.emplace_back(make_unique<Sphere>(Point(0.0f, 1.0f, 0.0f), 1.0f, lambertian));
 
-	BVHTree bvhTree(std::move(hitables), 0.0f, 1.0f);
+	auto hitList = HitList(std::move(hitables));
+	//BVHTree bvhTree(std::move(hitables), 0.0f, 1.0f);
 
 	/*
 		我的电脑只有四核心
@@ -87,7 +89,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 					float u = (static_cast<float>(i) + Random()) / static_cast<float>(width);
 					float v = (static_cast<float>(j) + Random()) / static_cast<float>(height);
 					Ray ray = camera.GetRay(u, v);
-					Color color = GetPixelColor(ray, bvhTree, 0);
+					Color color = GetPixelColor(ray, hitList, 50);
 					threadSingleImage.SetScreenPoint(i, j, color);
 				}
 			}
@@ -95,9 +97,17 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 				std::lock_guard<mutex> lock(imageLock);
 				caculateCount += 1;
 				//将得到的数值累加至主线程中
-				for (unsigned y = 0; y < height; y++) {
-					for (unsigned x = 0; x < width; x++) {
-						Color newColor = colorImage.GetImagePoint(x, y) + threadSingleImage.GetImagePoint(x, y);
+				for (int y = 0; y < height; y++) {
+					for (int x = 0; x < width; x++) {
+						Color singleColor = threadSingleImage.GetImagePoint(x, y);
+						/*
+							需要将颜色范围压缩至[0,1]
+						*/
+						for (int index = 0; index < 3; index++) {
+							singleColor[index] = std::clamp(singleColor[index], 0.0f, 1.0f);
+							singleColor[index] = sqrt(singleColor[index]);
+						}
+						Color newColor = colorImage.GetImagePoint(x, y) + singleColor;
 						colorImage.SetImagePoint(x, y, newColor);
 					}
 				}
@@ -107,7 +117,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 	/*
 		线程开始
 	*/
-	vector<thread> threadPool(4);
+	vector<thread> threadPool(1);
 	for (auto& t : threadPool) {
 		t = thread(threadTask);
 	}
@@ -124,7 +134,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 				mainCaculateCount = caculateCount;
 				for (int y = 0; y < height; y++) {
 					for (int x = 0; x < width; x++) {
-						Color newColor = colorImage.GetImagePoint(x, y) * (1.0f / mainCaculateCount);
+						Color newColor = colorImage.GetImagePoint(x, y) / static_cast<float>(mainCaculateCount);
 						image.SetImagePoint(x, y, newColor);
 					}
 				}
@@ -145,7 +155,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 			auto seconds = (std::chrono::duration_cast<std::chrono::seconds>(t1 - t0) % 60).count();
 			auto minutes = std::chrono::duration_cast<std::chrono::minutes>(t1 - t0).count();
 			s.append(std::to_wstring(minutes));
-			s.append(L"::");
+			s.append(L":");
 			if (seconds < 10) {
 				s.append(L"0");
 			}
@@ -165,8 +175,6 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 }
 
 Color GetPixelColor(Ray ray, Hitable& hits, int depth) {
-	constexpr int RecursionMax = 50;
-
 	HitRecord record;
 	if (!hits.Hit(ray, 0.001f, FLT_MAX, record)) {
 		Vector unit = ray.Direction().Normalize();
@@ -181,10 +189,12 @@ Color GetPixelColor(Ray ray, Hitable& hits, int depth) {
 		这里会比原版更清晰
 	*/
 	Ray scattered;
+	Color emitted;
 	Color attenuation;
-	if (depth < RecursionMax) {
-		return record.emit + attenuation * GetPixelColor(scattered, hits, depth + 1);
+	record.hitable->Calculate(record.ray, record.t, scattered, emitted, attenuation);
+	if (depth >= 0) {
+		return emitted + attenuation * GetPixelColor(scattered, hits, depth - 1);
 	} else {
-		return record.emit;
+		return emitted;
 	}
 }

@@ -95,7 +95,7 @@ public:
 			根据轴来排序
 		*/
 		int axis = static_cast<int>(Random() * 2.999f);
-		std::sort(begin, end, [&](const unique_ptr<Hitable>& h0, const unique_ptr<Hitable>& h1) {
+		std::sort(begin, end, [&](const shared_ptr<Hitable>& h0, const shared_ptr<Hitable>& h1) {
 			AxisAlignmentBoundingBox leftBox;
 			AxisAlignmentBoundingBox rightBox;
 			if (!h0->BoundingBox(time0, time1, leftBox) || !h1->BoundingBox(time0, time1, rightBox)) {
@@ -106,7 +106,7 @@ public:
 			}
 			return false;
 		});
-		int n = end - begin;
+		int n = static_cast<int>(end - begin);
 		if (n == 1) {
 			left = *begin;
 			right = *begin;
@@ -151,6 +151,9 @@ public:
 	virtual bool BoundingBox(float time0, float time1, AxisAlignmentBoundingBox& box) const override {
 		box = this->box;
 		return true;
+	}
+	virtual bool Calculate(Ray ray, float t, Ray& scattered, Color& emited, Color& attenuation) const override {
+		throw std::exception("此函数无作用");
 	}
 private:
 	shared_ptr<Hitable> left;

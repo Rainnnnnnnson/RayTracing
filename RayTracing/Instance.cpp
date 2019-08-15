@@ -10,6 +10,10 @@ bool FlipNormal::BoundingBox(float time0, float time1, AxisAlignmentBoundingBox&
 	return hitable->BoundingBox(time0, time1, box);
 }
 
+bool FlipNormal::Calculate(Ray ray, float t, Ray& scattered, Color& emited, Color& attenuation) const {
+	throw std::exception("TODO");
+}
+
 Translate::Translate(unique_ptr<Hitable> hitable, Vector displacement) : hitable(std::move(hitable)), displacement(displacement) {}
 
 bool Translate::Hit(Ray ray, float tMin, float tMax, HitRecord& record) const {
@@ -27,6 +31,10 @@ bool Translate::BoundingBox(float time0, float time1, AxisAlignmentBoundingBox& 
 	}
 	box = AxisAlignmentBoundingBox(box.MinAxis() + displacement, box.MaxAxis() + displacement);
 	return true;
+}
+
+bool Translate::Calculate(Ray ray, float t, Ray& scattered, Color& emited, Color& attenuation) const {
+	throw std::exception("TODO");
 }
 
 RotateYAxis::RotateYAxis(unique_ptr<Hitable> hitable, float angle) : hitable(std::move(hitable)), angle(angle) {}
@@ -82,4 +90,8 @@ bool RotateYAxis::BoundingBox(float time0, float time1, AxisAlignmentBoundingBox
 	}
 	box = AxisAlignmentBoundingBox(min, max);
 	return true;
+}
+
+bool RotateYAxis::Calculate(Ray ray, float t, Ray& scattered, Color& emited, Color& attenuation) const {
+	throw std::exception("TODO");
 }

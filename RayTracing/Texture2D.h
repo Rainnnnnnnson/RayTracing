@@ -20,29 +20,29 @@ public:
 	}
 
 	Element GetImagePoint(int x, int y) const {
-		assertion(x > 0 && x < width);
-		assertion(y > 0 && y < height);
+		assertion(x >= 0 && x < width);
+		assertion(y >= 0 && y < height);
 		int index = y * width + x;
 		return elements[index];
 	}
 
 	void SetImagePoint(int x, int y, Element element) {
-		assertion(x > 0 && x < width);
-		assertion(y > 0 && y < height);
+		assertion(x >= 0 && x < width);
+		assertion(y >= 0 && y < height);
 		int index = y * width + x;
 		elements[index] = element;
 	}
 
 	Element GetScreenPoint(int x, int y) const {
-		assertion(x > 0 && x < width);
-		assertion(y > 0 && y < height);
+		assertion(x >= 0 && x < width);
+		assertion(y >= 0 && y < height);
 		int index = (height - 1 - y) * width + x;
 		return elements[index];
 	}
 
 	void SetScreenPoint(int x, int y, Element element) {
-		assertion(x > 0 && x < width);
-		assertion(y > 0 && y < height);
+		assertion(x >= 0 && x < width);
+		assertion(y >= 0 && y < height);
 		int index = (height - 1 - y) * width + x;
 		elements[index] = element;
 	}

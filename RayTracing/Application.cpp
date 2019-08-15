@@ -52,14 +52,14 @@ Application::~Application() {
 RGBImage Application::GetImage(const wchar_t* fileName) const {
 	auto bitMap = Gdiplus::Bitmap::FromFile(fileName);
 	assertion(bitMap->GetWidth() != 0 && bitMap->GetHeight() != 0);
-	size_t width = static_cast<size_t>(bitMap->GetWidth());
-	size_t height = static_cast<size_t>(bitMap->GetHeight());
-	RGBImage image({width, height});
-	for (size_t y = 0; y < height; y++) {
-		for (size_t x = 0; x < width; x++) {
+	int width = static_cast<int>(bitMap->GetWidth());
+	int height = static_cast<int>(bitMap->GetHeight());
+	RGBImage image(width, height);
+	for (int y = 0; y < height; y++) {
+		for (int x = 0; x < width; x++) {
 			Gdiplus::Color color;
 			bitMap->GetPixel(x, y, &color);
-			image.SetImagePoint(x, y, RGBColor{color.GetR(), color.GetG(), color.GetB()});
+			image.SetImagePoint(x, y, RGBColor(color.GetR(), color.GetG(), color.GetB()));
 		}
 	}
 	return image;
@@ -70,8 +70,8 @@ void Application::SetWindowsText(const wchar_t* text) {
 }
 
 bool Application::Continue() {
-	size_t width = buffer.GetWidth();
-	size_t height = buffer.GetHeight();
+	int width = buffer.GetWidth();
+	int height = buffer.GetHeight();
 	Gdiplus::Graphics graphics(hwnd);
 	Gdiplus::Bitmap bitmap(width, height, PixelFormat24bppRGB);
 	Gdiplus::Rect rect(0, 0, width, height);
@@ -85,8 +85,8 @@ bool Application::Continue() {
 			Gdiplus::BitmapData bitmapData;
 			BeginPaint(hwnd, &ps);
 			bitmap.LockBits(&rect, 0, PixelFormat24bppRGB, &bitmapData);
-			for (size_t y = 0; y < height; y++) {
-				for (size_t x = 0; x < width; x++) {
+			for (int y = 0; y < height; y++) {
+				for (int x = 0; x < width; x++) {
 					RGBColor rgb = buffer.GetImagePoint(x, y);
 					auto p = reinterpret_cast<unsigned char*>(bitmapData.Scan0);
 					int index = y * width + x;

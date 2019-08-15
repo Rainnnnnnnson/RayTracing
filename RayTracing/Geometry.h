@@ -36,18 +36,18 @@ private:
 
 class XYRect : public Hitable {
 public:
-	XYRect(float x0, float x1, float y0, float y1, float z, unique_ptr<Material> material);
+	XYRect(float x0, float x1, float y0, float y1, float z, shared_ptr<Material> material);
 	virtual bool Hit(Ray ray, float tMin, float tMax, HitRecord& record) const override;
 	virtual bool BoundingBox(float time0, float time1, AxisAlignmentBoundingBox& box) const override;
 	virtual bool Calculate(Ray ray, float t, Ray& scattered, Color& emited, Color& attenuation) const override;
 private:
-	unique_ptr<Material> material;
+	shared_ptr<Material> material;
 	float x0, x1, y0, y1, z;
 };
 
 class XZRect : public Hitable {
 public:
-	XZRect(float x0, float x1, float z0, float z1, float y, unique_ptr<Material> material);
+	XZRect(float x0, float x1, float z0, float z1, float y, shared_ptr<Material> material);
 	virtual bool Hit(Ray ray, float tMin, float tMax, HitRecord& record) const override;
 	virtual bool BoundingBox(float time0, float time1, AxisAlignmentBoundingBox& box) const override;
 	virtual bool Calculate(Ray ray, float t, Ray& scattered, Color& emited, Color& attenuation) const override;
@@ -58,18 +58,18 @@ private:
 
 class YZRect : public Hitable {
 public:
-	YZRect(float y0, float y1, float z0, float z1, float x, unique_ptr<Material> material);
+	YZRect(float y0, float y1, float z0, float z1, float x, shared_ptr<Material> material);
 	virtual bool Hit(Ray ray, float tMin, float tMax, HitRecord& record) const override;
 	virtual bool BoundingBox(float time0, float time1, AxisAlignmentBoundingBox& box) const override;
 	virtual bool Calculate(Ray ray, float t, Ray& scattered, Color& emited, Color& attenuation) const override;
 private:
-	unique_ptr<Material> material;
+	shared_ptr<Material> material;
 	float y0, y1, z0, z1, x;
 };
 
 class Box : public Hitable {
 public:
-	Box(Point pMin, Point pMax, unique_ptr<Material> material);
+	Box(Point pMin, Point pMax, shared_ptr<Material> material);
 	virtual bool Hit(Ray ray, float tMin, float tMax, HitRecord& record) const override;
 	virtual bool BoundingBox(float time0, float time1, AxisAlignmentBoundingBox& box) const override;
 	virtual bool Calculate(Ray ray, float t, Ray& scattered, Color& emited, Color& attenuation) const override;

@@ -240,3 +240,11 @@ Vector Ray::Direction() const {
 float Ray::Time() const {
 	return time;
 }
+
+Vector RamdomInUnitSphere() {
+	Vector p;
+	do {
+		p = 2.0f * Point(Random(), Random(), Random()) - Point(1.0f, 1.0f, 1.0f);
+	} while (p.Length() >= 1.0f);
+	return p.Normalize();
+}

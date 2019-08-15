@@ -16,9 +16,9 @@ class Hitable;
 	t æ‡¿Î
 */
 struct HitRecord {
-	Hitable* hitable;
+	Hitable* hitable = nullptr;
 	Ray ray;
-	float t;
+	float t = 0;
 };
 
 

@@ -38,14 +38,6 @@ void GetSphereUV(Vector vec, float& u, float& v) {
 	v = (theta + PI / 2.0f) / PI;
 }
 
-Vector RamdomInUnitSphere() {
-	Vector p;
-	do {
-		p = 2.0f * Point(Random(), Random(), Random()) - Point(1.0f, 1.0f, 1.0f);
-	} while (p.Length() >= 1.0f);
-	return p;
-}
-
 bool CircleTextureSphere::Calculate(Ray ray, float t, Ray& scattered, Color& emited, Color& attenuation) const {
 	Point hitPoint = ray.PointAtParamter(t);
 	Vector normal = (hitPoint - center) / radius;

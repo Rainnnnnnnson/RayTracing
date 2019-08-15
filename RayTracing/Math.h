@@ -107,6 +107,7 @@ private:
 
 /*
 	光线需要携带时间  不然使用随机数会导致  同一个物体不同位置
+	Vector 构造的时候保证其为单位向量
 */
 class Ray {
 public:
@@ -122,3 +123,5 @@ private:
 	Vector direction;
 	float time;
 };
+
+Vector RamdomInUnitSphere();

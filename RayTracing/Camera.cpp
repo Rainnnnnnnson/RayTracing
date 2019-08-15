@@ -19,17 +19,9 @@ Camera::Camera(Point eye, Point lookAt, Vector up,
 	vertical = v * halfHeight * focalDistance * 2.0f;
 }
 
-Vector RandomInUnitDisk() {
-	Vector result;
-	do {
-		result = Vector{Random(), Random(), 0.0f} *2.0f - Vector(1.0f, 1.0f, 0.0f);
-	} while (result.Length() > 1.0f);
-	return result;
-}
-
 Ray Camera::GetRay(float u, float v) const {
-	Vector rand = RandomInUnitDisk() * lensRadius;
+	Vector rand = RamdomInUnitSphere() * lensRadius;
 	Vector lensOffest = this->u * rand.X() + this->v * rand.Y();
 	float time = time0 + Random() * (time1 - time0);
-	return Ray(origin + lensOffest, lowerLeftCorner - origin + horizontal * u + vertical * v - lensOffest, time);
+	return Ray(origin + lensOffest, (lowerLeftCorner - origin + horizontal * u + vertical * v - lensOffest).Normalize(), time);
 }
