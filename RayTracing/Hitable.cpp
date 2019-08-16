@@ -11,8 +11,8 @@ AxisAlignmentBoundingBox::AxisAlignmentBoundingBox(AxisAlignmentBoundingBox box1
 		small[i] = std::min(box1.minAxis[i], box2.minAxis[i]);
 		big[i] = std::max(box1.maxAxis[i], box2.maxAxis[i]);
 	}
-	minAxis = minAxis;
-	maxAxis = maxAxis;
+	minAxis = small;
+	maxAxis = big;
 }
 
 AxisAlignmentBoundingBox::AxisAlignmentBoundingBox(Point minAxis, Point maxAxis) : minAxis(minAxis), maxAxis(maxAxis) {}

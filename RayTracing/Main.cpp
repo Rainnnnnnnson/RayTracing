@@ -71,8 +71,8 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 	hitables.emplace_back(make_unique<Sphere>(Point(0.0f, 0.0f, 1.0f), 0.5f, lambertian));
 	hitables.emplace_back(make_unique<Sphere>(Point(0.0f, -100.5f, 1.0f), 100.0f, lambertian));
 
-	auto hitList = HitList(std::move(hitables));
-	//BVHTree bvhTree(std::move(hitables), 0.0f, 1.0f);
+	//auto hit = HitList(std::move(hitables));
+	auto hit = BVHTree(std::move(hitables), 0.0f, 1.0f);
 
 	/*
 		布置每个线程的任务
@@ -87,7 +87,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 					float u = (static_cast<float>(i) + Random()) / static_cast<float>(width);
 					float v = (static_cast<float>(j) + Random()) / static_cast<float>(height);
 					Ray ray = camera.GetRay(u, v);
-					Color color = GetPixelColor(ray, hitList, 50);
+					Color color = GetPixelColor(ray, hit, 50);
 					threadSingleImage.SetScreenPoint(i, j, color);
 				}
 			}
