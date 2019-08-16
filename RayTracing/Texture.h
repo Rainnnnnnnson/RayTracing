@@ -42,9 +42,9 @@ class TurbulenceTexture : public Texture {
 public:
 	/*
 		k1 控制其间隔 k1 越大 间隔越小
-		k2 湍流横向
+		k2 湍流横向的波纹
 	*/
-	TurbulenceTexture(float k1, float k2, float w, int depth);
+	TurbulenceTexture(float scale, float k1, float k2, int depth);
 	virtual Color Value(Point p) const override;
 private:
 	float scale;

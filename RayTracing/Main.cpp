@@ -65,7 +65,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 	/*
 		…Ë÷√≥°æ∞
 	*/
-	shared_ptr<Lambertian> turb = make_shared<Lambertian>(make_shared<TurbulenceTexture>(10.0f, 5.0f, 2.0f, 7));
+	shared_ptr<Lambertian> turb = make_shared<Lambertian>(make_shared<TurbulenceTexture>(10.0f, 10.0f, 2.0f, 7));
 	shared_ptr<Lambertian> noise = make_shared<Lambertian>(make_shared<NoiseTexture>(4.0f));
 	shared_ptr<Lambertian> lambertian = make_shared<Lambertian>(make_shared<ConstantTexture>(Color(0.5f, 0.5f, 0.5f)));
 	shared_ptr<Lambertian> check = make_shared<Lambertian>(make_shared<CheckerTexture>(
