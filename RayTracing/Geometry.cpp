@@ -58,8 +58,10 @@ bool MovingSphere::Calculate(Ray ray, float t, Ray& scattered, Color& emited, Co
 	throw std::exception("TODO");
 }
 
-XYRect::XYRect(float x0, float x1, float y0, float y1, float z, shared_ptr<Material> material)
-	: x0(x0), x1(x1), y0(y0), y1(y1), z(z), material(std::move(material)) {}
+XYRect::XYRect(float x0, float x1, float y0, float y1, float z, shared_ptr<Material> material, bool normalPositive)
+	: x0(x0), x1(x1), y0(y0), y1(y1), z(z), material(std::move(material)) {
+	normalSign = normalPositive ? -1.0f : 1.0f;
+}
 
 bool XYRect::Hit(Ray ray, float tMin, float tMax, HitRecord& record) const {
 	float t = (z - ray.Origin().Z()) / ray.Direction().Z();
@@ -84,8 +86,10 @@ bool XYRect::Calculate(Ray ray, float t, Ray& scattered, Color& emited, Color& a
 	throw std::exception("TODO");
 }
 
-XZRect::XZRect(float x0, float x1, float z0, float z1, float y, shared_ptr<Material> material)
-	: x0(x0), x1(x1), z0(z0), z1(z1), y(y), material(std::move(material)) {}
+XZRect::XZRect(float x0, float x1, float z0, float z1, float y, shared_ptr<Material> material, bool normalPositive)
+	: x0(x0), x1(x1), z0(z0), z1(z1), y(y), material(std::move(material)) {
+	normalSign = normalPositive ? -1.0f : 1.0f;
+}
 
 bool XZRect::Hit(Ray ray, float tMin, float tMax, HitRecord& record) const {
 	float t = (y - ray.Origin().Y()) / ray.Direction().Y();
@@ -110,8 +114,10 @@ bool XZRect::Calculate(Ray ray, float t, Ray& scattered, Color& emited, Color& a
 	throw std::exception("TODO");
 }
 
-YZRect::YZRect(float y0, float y1, float z0, float z1, float x, shared_ptr<Material> material)
-	: y0(y0), y1(y1), z0(z0), z1(z1), x(x), material(std::move(material)) {}
+YZRect::YZRect(float y0, float y1, float z0, float z1, float x, shared_ptr<Material> material, bool normalPositive)
+	: y0(y0), y1(y1), z0(z0), z1(z1), x(x), material(std::move(material)) {
+	normalSign = normalPositive ? -1.0f : 1.0f;
+}
 
 bool YZRect::Hit(Ray ray, float tMin, float tMax, HitRecord& record) const {
 	float t = (x - ray.Origin().X()) / ray.Direction().X();
@@ -154,11 +160,11 @@ bool Box::Calculate(Ray ray, float t, Ray& scattered, Color& emited, Color& atte
 HitList Box::InitList(shared_ptr<Material>  material) {
 	vector<unique_ptr<Hitable>> hitables;
 	hitables.reserve(6);
-	hitables.emplace_back(make_unique<FlipNormal>(make_unique<XYRect>(pMin.X(), pMax.X(), pMin.Y(), pMax.Y(), pMin.Z(), material)));
-	hitables.emplace_back(make_unique<XYRect>(pMin.X(), pMax.X(), pMin.Y(), pMax.Y(), pMax.Z(), material));
-	hitables.emplace_back(make_unique<FlipNormal>(make_unique<XZRect>(pMin.X(), pMax.X(), pMin.Z(), pMax.Z(), pMin.Y(), material)));
-	hitables.emplace_back(make_unique<XZRect>(pMin.X(), pMax.X(), pMin.Z(), pMax.Z(), pMax.Y(), material));
-	hitables.emplace_back(make_unique<FlipNormal>(make_unique<YZRect>(pMin.Y(), pMax.Y(), pMin.Z(), pMax.Z(), pMin.X(), material)));
-	hitables.emplace_back(make_unique<YZRect>(pMin.Y(), pMax.Y(), pMin.Z(), pMax.Z(), pMax.X(), material));
+	hitables.emplace_back(make_shared<XYRect>(pMin.X(), pMax.X(), pMin.Y(), pMax.Y(), pMin.Z(), material, false));
+	hitables.emplace_back(make_shared<XYRect>(pMin.X(), pMax.X(), pMin.Y(), pMax.Y(), pMax.Z(), material));
+	hitables.emplace_back(make_shared<XZRect>(pMin.X(), pMax.X(), pMin.Z(), pMax.Z(), pMin.Y(), material, false));
+	hitables.emplace_back(make_shared<XZRect>(pMin.X(), pMax.X(), pMin.Z(), pMax.Z(), pMax.Y(), material));
+	hitables.emplace_back(make_shared<YZRect>(pMin.Y(), pMax.Y(), pMin.Z(), pMax.Z(), pMin.X(), material, false));
+	hitables.emplace_back(make_shared<YZRect>(pMin.Y(), pMax.Y(), pMin.Z(), pMax.Z(), pMax.X(), material));
 	return HitList(std::move(hitables));
 }

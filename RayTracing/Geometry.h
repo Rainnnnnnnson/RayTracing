@@ -36,35 +36,38 @@ private:
 
 class XYRect : public Hitable {
 public:
-	XYRect(float x0, float x1, float y0, float y1, float z, shared_ptr<Material> material);
+	XYRect(float x0, float x1, float y0, float y1, float z, shared_ptr<Material> material, bool normalPositive = true);
 	virtual bool Hit(Ray ray, float tMin, float tMax, HitRecord& record) const override;
 	virtual bool BoundingBox(float time0, float time1, AxisAlignmentBoundingBox& box) const override;
 	virtual bool Calculate(Ray ray, float t, Ray& scattered, Color& emited, Color& attenuation) const override;
 private:
 	shared_ptr<Material> material;
 	float x0, x1, y0, y1, z;
+	float normalSign;
 };
 
 class XZRect : public Hitable {
 public:
-	XZRect(float x0, float x1, float z0, float z1, float y, shared_ptr<Material> material);
+	XZRect(float x0, float x1, float z0, float z1, float y, shared_ptr<Material> material, bool normalPositive = true);
 	virtual bool Hit(Ray ray, float tMin, float tMax, HitRecord& record) const override;
 	virtual bool BoundingBox(float time0, float time1, AxisAlignmentBoundingBox& box) const override;
 	virtual bool Calculate(Ray ray, float t, Ray& scattered, Color& emited, Color& attenuation) const override;
 private:
 	shared_ptr<Material> material;
 	float x0, x1, z0, z1, y;
+	float normalSign;
 };
 
 class YZRect : public Hitable {
 public:
-	YZRect(float y0, float y1, float z0, float z1, float x, shared_ptr<Material> material);
+	YZRect(float y0, float y1, float z0, float z1, float x, shared_ptr<Material> material, bool normalPositive = true);
 	virtual bool Hit(Ray ray, float tMin, float tMax, HitRecord& record) const override;
 	virtual bool BoundingBox(float time0, float time1, AxisAlignmentBoundingBox& box) const override;
 	virtual bool Calculate(Ray ray, float t, Ray& scattered, Color& emited, Color& attenuation) const override;
 private:
 	shared_ptr<Material> material;
 	float y0, y1, z0, z1, x;
+	float normalSign;
 };
 
 class Box : public Hitable {

@@ -65,16 +65,20 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 	/*
 		…Ë÷√≥°æ∞
 	*/
-	shared_ptr<Lambertian> turb = make_shared<Lambertian>(make_shared<TurbulenceTexture>(10.0f, 10.0f, 2.0f, 7));
-	shared_ptr<Lambertian> noise = make_shared<Lambertian>(make_shared<NoiseTexture>(4.0f));
-	shared_ptr<Lambertian> lambertian = make_shared<Lambertian>(make_shared<ConstantTexture>(Color(0.5f, 0.5f, 0.5f)));
-	shared_ptr<Lambertian> check = make_shared<Lambertian>(make_shared<CheckerTexture>(
+	auto turb = make_shared<Lambertian>(make_shared<TurbulenceTexture>(10.0f, 10.0f, 2.0f, 7));
+	auto noise = make_shared<Lambertian>(make_shared<NoiseTexture>(4.0f));
+	auto lambertian = make_shared<Lambertian>(make_shared<ConstantTexture>(Color(0.5f, 0.5f, 0.5f)));
+	auto check = make_shared<Lambertian>(make_shared<CheckerTexture>(
 		make_shared<ConstantTexture>(Color(0.9f, 0.9f, 0.9f)), make_shared<ConstantTexture>(Color(0.2f, 0.3f, 0.1f)), 1.0f
-		));
+	));
+	auto metal = make_shared<Metal>(Color(0.7f, 0.7f, 0.7f), 0.3f);
+	auto dielectric = make_shared<Dielectric>(1.5f);
 
 	vector<unique_ptr<Hitable>> hitables;
 	hitables.emplace_back(make_unique<Sphere>(Point(0.0f, 0.0f, 1.0f), 0.5f, lambertian));
-	hitables.emplace_back(make_unique<Sphere>(Point(0.0f, -100.5f, 1.0f), 100.0f, turb));
+	hitables.emplace_back(make_unique<Sphere>(Point(1.0f, 0.0f, 1.0f), 0.5f, metal));
+	hitables.emplace_back(make_unique<Sphere>(Point(-1.0f, 0.0f, 1.0f), 0.5f, dielectric));
+	hitables.emplace_back(make_unique<Sphere>(Point(0.0f, -100.5f, 1.0f), 100.0f, check));
 
 	//auto hit = HitList(std::move(hitables));
 	auto hit = BVHTree(std::move(hitables), 0.0f, 1.0f);

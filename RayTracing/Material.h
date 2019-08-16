@@ -58,7 +58,7 @@ private:
 
 class Iostropic : public Material {
 public:
-	Iostropic(unique_ptr<Texture> p);
+	Iostropic(shared_ptr<Texture> albedo);
 	virtual bool Calculate(const CalculateData& data, Ray& scattered, Color& emitted, Color& attenuation) const override;
 private:
 	shared_ptr<Texture> albedo;

@@ -1,5 +1,5 @@
 #include "Material.h"
-
+#include "Assertion.h"
 Lambertian::Lambertian(shared_ptr<Texture> albedo) : albedo(std::move(albedo)) {}
 
 bool Lambertian::Calculate(const CalculateData& data, Ray& scattered, Color& emitted, Color& attenuation) const {
@@ -10,3 +10,89 @@ bool Lambertian::Calculate(const CalculateData& data, Ray& scattered, Color& emi
 	return true;
 }
 
+Metal::Metal(Color albedo, float fuzzier) : albedo(albedo), fuzzier(fuzzier) {
+	assertion(fuzzier >= 0.0f && fuzzier <= 1.0f);
+}
+
+Vector Reflect(Vector v, Vector normal) {
+	return v - (normal * 2.0f * v.Dot(normal));
+}
+
+bool Metal::Calculate(const CalculateData& data, Ray& scattered, Color& emitted, Color& attenuation) const {
+	Vector reflected = Reflect(data.ray.Direction().Normalize(), data.normal);
+	scattered = Ray{data.hitPoint, reflected + RamdomInUnitSphere() * fuzzier, data.ray.Time()};
+	emitted = Color(0.0f, 0.0f, 0.0f);
+	attenuation = albedo;
+	return scattered.Direction().Dot(data.normal) > 0;
+}
+
+Dielectric::Dielectric(float refractive) : refractive(refractive) {}
+
+bool Refract(Vector v, Vector normal, float NiOverNt, Vector& refracted) {
+	v = v.Normalize();
+	float dt = v.Dot(normal);
+	float discriminant = 1.0f - NiOverNt * NiOverNt * (1.0f - dt * dt);
+	if (discriminant > 0.0f) {
+		float cosRefact = sqrt(discriminant);
+		refracted = (v + -(normal * dt)) * NiOverNt + -(normal * cosRefact);
+		return true;
+	} else {
+		return false;
+	}
+}
+
+float Schlick(float cosine, float refracted) {
+	float r0 = (refracted - 1.0f) / (refracted + 1.0f);
+	r0 = r0 * r0;
+	return r0 + (1.0f - r0) * pow((1 - cosine), 5.0f);
+}
+
+bool Dielectric::Calculate(const CalculateData& data, Ray& scattered, Color& emitted, Color& attenuation) const {
+	Vector outwardNormal;
+	Vector reflected = Reflect(data.ray.Direction(), data.normal);
+	float NiOverNt;
+	attenuation = Color{1.0f, 1.0f, 1.0f};
+	Vector refracted;
+	float reflectPercent;
+	float cosine;
+
+	if (data.ray.Direction().Dot(data.normal) > 0) {
+		outwardNormal = -data.normal;
+		NiOverNt = refractive;
+		cosine = refractive * data.ray.Direction().Dot(data.normal) * (1.0f / data.ray.Direction().Length());
+	} else {
+		outwardNormal = data.normal;
+		NiOverNt = 1.0f / refractive;
+		cosine = -data.ray.Direction().Dot(data.normal) * (1.0f / data.ray.Direction().Length());
+	}
+
+	if (Refract(data.ray.Direction(), outwardNormal, NiOverNt, refracted)) {
+		reflectPercent = Schlick(cosine, refractive);
+	} else {
+		reflectPercent = 1.0f;
+	}
+
+	if (Random() < reflectPercent) {
+		scattered = Ray(data.hitPoint, reflected, data.ray.Time());
+	} else {
+		scattered = Ray(data.hitPoint, refracted, data.ray.Time());
+	}
+	emitted = Color(0.0f, 0.0f, 0.0f);
+	return true;
+}
+
+DiffuseLight::DiffuseLight(shared_ptr<Texture> texture) : emit(std::move(texture)) {}
+
+bool DiffuseLight::Calculate(const CalculateData& data, Ray& scattered, Color& emitted, Color& attenuation) const {
+	emitted = emit->Value(data.hitPoint);
+	return false;
+}
+
+Iostropic::Iostropic(shared_ptr<Texture> albedo) : albedo(std::move(albedo)) {}
+
+bool Iostropic::Calculate(const CalculateData& data, Ray& scattered, Color& emitted, Color& attenuation) const {
+	scattered = Ray(data.hitPoint, RamdomInUnitSphere(), data.ray.Time());
+	emitted = Color(0.0f, 0.0f, 0.0f);
+	attenuation = albedo->Value(data.hitPoint);
+	return true;
+}
