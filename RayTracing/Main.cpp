@@ -65,11 +65,16 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 	/*
 		…Ë÷√≥°æ∞
 	*/
-	shared_ptr<Lambertian> lambertian = make_shared<Lambertian>(make_unique<ConstantTexture>(Color(0.5f, 0.5f, 0.5f)));
+	shared_ptr<Lambertian> turb = make_shared<Lambertian>(make_shared<TurbulenceTexture>(10.0f, 5.0f, 2.0f, 7));
+	shared_ptr<Lambertian> noise = make_shared<Lambertian>(make_shared<NoiseTexture>(4.0f));
+	shared_ptr<Lambertian> lambertian = make_shared<Lambertian>(make_shared<ConstantTexture>(Color(0.5f, 0.5f, 0.5f)));
+	shared_ptr<Lambertian> check = make_shared<Lambertian>(make_shared<CheckerTexture>(
+		make_shared<ConstantTexture>(Color(0.9f, 0.9f, 0.9f)), make_shared<ConstantTexture>(Color(0.2f, 0.3f, 0.1f)), 1.0f
+		));
 
 	vector<unique_ptr<Hitable>> hitables;
 	hitables.emplace_back(make_unique<Sphere>(Point(0.0f, 0.0f, 1.0f), 0.5f, lambertian));
-	hitables.emplace_back(make_unique<Sphere>(Point(0.0f, -100.5f, 1.0f), 100.0f, lambertian));
+	hitables.emplace_back(make_unique<Sphere>(Point(0.0f, -100.5f, 1.0f), 100.0f, turb));
 
 	//auto hit = HitList(std::move(hitables));
 	auto hit = BVHTree(std::move(hitables), 0.0f, 1.0f);

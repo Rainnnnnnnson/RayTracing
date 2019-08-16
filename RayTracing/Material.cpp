@@ -1,6 +1,6 @@
 #include "Material.h"
 
-Lambertian::Lambertian(unique_ptr<Texture> albedo) : albedo(std::move(albedo)) {}
+Lambertian::Lambertian(shared_ptr<Texture> albedo) : albedo(std::move(albedo)) {}
 
 bool Lambertian::Calculate(const CalculateData& data, Ray& scattered, Color& emitted, Color& attenuation) const {
 	Point target = data.hitPoint + data.normal + RamdomInUnitSphere();

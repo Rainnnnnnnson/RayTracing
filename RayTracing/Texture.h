@@ -1,7 +1,9 @@
 #pragma once
 #include "Math.h"
 #include <memory>
+using std::shared_ptr;
 using std::unique_ptr;
+
 class Texture {
 public:
 	/*
@@ -20,11 +22,11 @@ private:
 
 class CheckerTexture : public Texture {
 public:
-	CheckerTexture(unique_ptr<Texture> odd, unique_ptr<Texture> even, float distance);
+	CheckerTexture(shared_ptr<Texture> odd, shared_ptr<Texture> even, float distance);
 	virtual Color Value(Point p) const override;
 private:
-	unique_ptr<Texture> odd;
-	unique_ptr<Texture> even;
+	shared_ptr<Texture> odd;
+	shared_ptr<Texture> even;
 	float distance;
 };
 
@@ -34,4 +36,19 @@ public:
 	virtual Color Value(Point p) const override;
 private:
 	float scale;
+};
+
+class TurbulenceTexture : public Texture {
+public:
+	/*
+		k1 控制其间隔 k1 越大 间隔越小
+		k2 湍流横向
+	*/
+	TurbulenceTexture(float k1, float k2, float w, int depth);
+	virtual Color Value(Point p) const override;
+private:
+	float scale;
+	float k1;
+	float k2;
+	int depth;
 };

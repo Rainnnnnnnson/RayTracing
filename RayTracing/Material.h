@@ -25,10 +25,10 @@ public:
 
 class Lambertian : public Material {
 public:
-	Lambertian(unique_ptr<Texture> albedo);
+	Lambertian(shared_ptr<Texture> albedo);
 	virtual bool Calculate(const CalculateData& data, Ray& scattered, Color& emitted, Color& attenuation) const override;
 private:
-	unique_ptr<Texture> albedo;
+	shared_ptr<Texture> albedo;
 };
 
 class Metal : public Material {
@@ -50,10 +50,10 @@ private:
 
 class DiffuseLight : public Material {
 public:
-	DiffuseLight(unique_ptr<Texture> texture);
+	DiffuseLight(shared_ptr<Texture> texture);
 	virtual bool Calculate(const CalculateData& data, Ray& scattered, Color& emitted, Color& attenuation) const override;
 private:
-	unique_ptr<Texture> emit;
+	shared_ptr<Texture> emit;
 };
 
 class Iostropic : public Material {
@@ -61,5 +61,5 @@ public:
 	Iostropic(unique_ptr<Texture> p);
 	virtual bool Calculate(const CalculateData& data, Ray& scattered, Color& emitted, Color& attenuation) const override;
 private:
-	unique_ptr<Texture> albedo;
+	shared_ptr<Texture> albedo;
 };
