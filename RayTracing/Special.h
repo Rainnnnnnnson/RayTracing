@@ -17,7 +17,7 @@ public:
 	CircleTextureSphere(Point center, float radius, RGBImage texture);
 	virtual bool Hit(Ray ray, float tMin, float tMax, HitRecord& record) const override;
 	virtual bool BoundingBox(float time0, float time1, AxisAlignmentBoundingBox& box) const override;
-	virtual bool Calculate(Ray ray, float t, Ray& scattered, Color& emited, Color& attenuation) const override;
+	virtual bool Calculate(const HitRecord& record, Ray& scattered, Color& emitted, Color& attenuation) const override;
 private:
 	RGBImage texture;
 	Point center;

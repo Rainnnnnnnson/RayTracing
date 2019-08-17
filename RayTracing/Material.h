@@ -2,12 +2,6 @@
 #include "Hitable.h"
 #include "Texture.h"
 
-struct CalculateData {
-	Ray ray; 
-	Point hitPoint;
-	Vector normal;
-};
-
 class Material {
 public:
 
@@ -20,13 +14,13 @@ public:
 		emitted     自发光颜色
 		attenuation 递归时的衰弱系数
 	*/
-	virtual bool Calculate(const CalculateData& data, Ray& scattered, Color& emitted, Color& attenuation) const = 0;
+	virtual bool Calculate(const HitRecord& record, Ray& scattered, Color& emitted, Color& attenuation) const = 0;
 };
 
 class Lambertian : public Material {
 public:
 	Lambertian(shared_ptr<Texture> albedo);
-	virtual bool Calculate(const CalculateData& data, Ray& scattered, Color& emitted, Color& attenuation) const override;
+	virtual bool Calculate(const HitRecord& record, Ray& scattered, Color& emitted, Color& attenuation) const override;
 private:
 	shared_ptr<Texture> albedo;
 };
@@ -34,7 +28,7 @@ private:
 class Metal : public Material {
 public:
 	Metal(Color albedo, float fuzzier);
-	virtual bool Calculate(const CalculateData& data, Ray& scattered, Color& emitted, Color& attenuation) const override;
+	virtual bool Calculate(const HitRecord& record, Ray& scattered, Color& emitted, Color& attenuation) const override;
 private:
 	Color albedo;
 	float fuzzier;
@@ -43,7 +37,7 @@ private:
 class Dielectric : public Material {
 public:
 	Dielectric(float refractive);
-	virtual bool Calculate(const CalculateData& data, Ray& scattered, Color& emitted, Color& attenuation) const override;
+	virtual bool Calculate(const HitRecord& record, Ray& scattered, Color& emitted, Color& attenuation) const override;
 private:
 	float refractive;
 };
@@ -51,7 +45,7 @@ private:
 class DiffuseLight : public Material {
 public:
 	DiffuseLight(shared_ptr<Texture> texture);
-	virtual bool Calculate(const CalculateData& data, Ray& scattered, Color& emitted, Color& attenuation) const override;
+	virtual bool Calculate(const HitRecord& record, Ray& scattered, Color& emitted, Color& attenuation) const override;
 private:
 	shared_ptr<Texture> emit;
 };
@@ -59,7 +53,7 @@ private:
 class Iostropic : public Material {
 public:
 	Iostropic(shared_ptr<Texture> albedo);
-	virtual bool Calculate(const CalculateData& data, Ray& scattered, Color& emitted, Color& attenuation) const override;
+	virtual bool Calculate(const HitRecord& record, Ray& scattered, Color& emitted, Color& attenuation) const override;
 private:
 	shared_ptr<Texture> albedo;
 };

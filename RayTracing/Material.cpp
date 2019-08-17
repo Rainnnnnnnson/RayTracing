@@ -2,11 +2,11 @@
 #include "Assertion.h"
 Lambertian::Lambertian(shared_ptr<Texture> albedo) : albedo(std::move(albedo)) {}
 
-bool Lambertian::Calculate(const CalculateData& data, Ray& scattered, Color& emitted, Color& attenuation) const {
-	Point target = data.hitPoint + data.normal + RamdomInUnitSphere();
-	scattered = Ray(data.hitPoint, (target - data.hitPoint).Normalize(), data.ray.Time());
+bool Lambertian::Calculate(const HitRecord& record, Ray& scattered, Color& emitted, Color& attenuation) const {
+	Point target = record.hitPoint + record.normal + RamdomInUnitSphere();
+	scattered = Ray(record.hitPoint, (target - record.hitPoint).Normalize(), record.ray.Time());
 	emitted = Color(0.0f, 0.0f, 0.0f);
-	attenuation = albedo->Value(data.hitPoint);
+	attenuation = albedo->Value(record.hitPoint);
 	return true;
 }
 
@@ -18,12 +18,12 @@ Vector Reflect(Vector v, Vector normal) {
 	return v - (normal * 2.0f * v.Dot(normal));
 }
 
-bool Metal::Calculate(const CalculateData& data, Ray& scattered, Color& emitted, Color& attenuation) const {
-	Vector reflected = Reflect(data.ray.Direction().Normalize(), data.normal);
-	scattered = Ray{data.hitPoint, reflected + RamdomInUnitSphere() * fuzzier, data.ray.Time()};
+bool Metal::Calculate(const HitRecord& record, Ray& scattered, Color& emitted, Color& attenuation) const {
+	Vector reflected = Reflect(record.ray.Direction(), record.normal);
+	scattered = Ray{record.hitPoint, reflected + RamdomInUnitSphere() * fuzzier, record.ray.Time()};
 	emitted = Color(0.0f, 0.0f, 0.0f);
 	attenuation = albedo;
-	return scattered.Direction().Dot(data.normal) > 0;
+	return scattered.Direction().Dot(record.normal) > 0;
 }
 
 Dielectric::Dielectric(float refractive) : refractive(refractive) {}
@@ -47,35 +47,35 @@ float Schlick(float cosine, float refracted) {
 	return r0 + (1.0f - r0) * pow((1 - cosine), 5.0f);
 }
 
-bool Dielectric::Calculate(const CalculateData& data, Ray& scattered, Color& emitted, Color& attenuation) const {
+bool Dielectric::Calculate(const HitRecord& record, Ray& scattered, Color& emitted, Color& attenuation) const {
 	Vector outwardNormal;
-	Vector reflected = Reflect(data.ray.Direction(), data.normal);
+	Vector reflected = Reflect(record.ray.Direction(), record.normal);
 	float NiOverNt;
 	attenuation = Color{1.0f, 1.0f, 1.0f};
 	Vector refracted;
 	float reflectPercent;
 	float cosine;
 
-	if (data.ray.Direction().Dot(data.normal) > 0) {
-		outwardNormal = -data.normal;
+	if (record.ray.Direction().Dot(record.normal) > 0) {
+		outwardNormal = -record.normal;
 		NiOverNt = refractive;
-		cosine = refractive * data.ray.Direction().Dot(data.normal) * (1.0f / data.ray.Direction().Length());
+		cosine = refractive * record.ray.Direction().Dot(record.normal) / record.ray.Direction().Length();
 	} else {
-		outwardNormal = data.normal;
+		outwardNormal = record.normal;
 		NiOverNt = 1.0f / refractive;
-		cosine = -data.ray.Direction().Dot(data.normal) * (1.0f / data.ray.Direction().Length());
+		cosine = -record.ray.Direction().Dot(record.normal) / record.ray.Direction().Length();
 	}
 
-	if (Refract(data.ray.Direction(), outwardNormal, NiOverNt, refracted)) {
+	if (Refract(record.ray.Direction(), outwardNormal, NiOverNt, refracted)) {
 		reflectPercent = Schlick(cosine, refractive);
 	} else {
 		reflectPercent = 1.0f;
 	}
 
 	if (Random() < reflectPercent) {
-		scattered = Ray(data.hitPoint, reflected, data.ray.Time());
+		scattered = Ray(record.hitPoint, reflected, record.ray.Time());
 	} else {
-		scattered = Ray(data.hitPoint, refracted, data.ray.Time());
+		scattered = Ray(record.hitPoint, refracted, record.ray.Time());
 	}
 	emitted = Color(0.0f, 0.0f, 0.0f);
 	return true;
@@ -83,16 +83,16 @@ bool Dielectric::Calculate(const CalculateData& data, Ray& scattered, Color& emi
 
 DiffuseLight::DiffuseLight(shared_ptr<Texture> texture) : emit(std::move(texture)) {}
 
-bool DiffuseLight::Calculate(const CalculateData& data, Ray& scattered, Color& emitted, Color& attenuation) const {
-	emitted = emit->Value(data.hitPoint);
+bool DiffuseLight::Calculate(const HitRecord& record, Ray& scattered, Color& emitted, Color& attenuation) const {
+	emitted = emit->Value(record.hitPoint);
 	return false;
 }
 
 Iostropic::Iostropic(shared_ptr<Texture> albedo) : albedo(std::move(albedo)) {}
 
-bool Iostropic::Calculate(const CalculateData& data, Ray& scattered, Color& emitted, Color& attenuation) const {
-	scattered = Ray(data.hitPoint, RamdomInUnitSphere(), data.ray.Time());
+bool Iostropic::Calculate(const HitRecord& record, Ray& scattered, Color& emitted, Color& attenuation) const {
+	scattered = Ray(record.hitPoint, RamdomInUnitSphere(), record.ray.Time());
 	emitted = Color(0.0f, 0.0f, 0.0f);
-	attenuation = albedo->Value(data.hitPoint);
+	attenuation = albedo->Value(record.hitPoint);
 	return true;
 }

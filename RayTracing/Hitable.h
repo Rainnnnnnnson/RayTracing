@@ -11,14 +11,18 @@ using std::make_unique;
 class Hitable;
 
 /* 
-	hitable 被击中物体 
-	ray 原本射入的光线
-	t 距离
+	hitable  被击中物体 
+	t        距离
+	ray      光线
+	hitPoint 击中点
+	normal   法线
 */
 struct HitRecord {
 	Hitable* hitable = nullptr;
-	Ray ray;
 	float t = 0;
+	Ray ray;
+	Point hitPoint;
+	Vector normal;
 };
 
 
@@ -69,7 +73,7 @@ public:
 		返回false 代表没有射出需要继续递归的光线
 		emited 不受影响 bool的影响
 	*/
-	virtual bool Calculate(Ray ray, float t, Ray& scattered, Color& emited, Color& attenuation) const = 0;
+	virtual bool Calculate(const HitRecord& record, Ray& scattered, Color& emitted, Color& attenuation) const = 0;
 };
 
 /*
@@ -80,7 +84,7 @@ public:
 	HitList(vector<unique_ptr<Hitable>> hitables);
 	virtual bool Hit(Ray ray, float tMin, float tMax, HitRecord& record) const override;
 	virtual bool BoundingBox(float time0, float time1, AxisAlignmentBoundingBox& box) const override;
-	virtual bool Calculate(Ray ray, float t, Ray& scattered, Color& emited, Color& attenuation) const override;
+	virtual bool Calculate(const HitRecord& record, Ray& scattered, Color& emitted, Color& attenuation) const override;
 private:
 	vector<unique_ptr<Hitable>> hitables;
 };
@@ -104,7 +108,7 @@ public:
 		使用构造器中的time0和time1来确定范围
 	*/
 	virtual bool BoundingBox(float time0, float time1, AxisAlignmentBoundingBox& box) const override;
-	virtual bool Calculate(Ray ray, float t, Ray& scattered, Color& emited, Color& attenuation) const override;
+	virtual bool Calculate(const HitRecord& record, Ray& scattered, Color& emitted, Color& attenuation) const override;
 private:
 	unique_ptr<Hitable> node;
 };

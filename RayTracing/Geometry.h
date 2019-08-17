@@ -7,7 +7,7 @@ public:
 	Sphere(Point center, float radius, shared_ptr<Material> material);
 	virtual bool Hit(Ray ray, float tMin, float tMax, HitRecord& record) const override;
 	virtual bool BoundingBox(float time0, float time1, AxisAlignmentBoundingBox& box) const override;
-	virtual bool Calculate(Ray ray, float t, Ray& scattered, Color& emited, Color& attenuation) const override;
+	virtual bool Calculate(const HitRecord& record, Ray& scattered, Color& emitted, Color& attenuation) const override;
 private:
 	shared_ptr<Material> material;
 	Point center;
@@ -24,7 +24,7 @@ public:
 	MovingSphere(Point center0, Point center1, float time0, float time1, float radius, shared_ptr<Material> material);
 	virtual bool Hit(Ray ray, float tMin, float tMax, HitRecord& record) const override;
 	virtual bool BoundingBox(float time0, float time1, AxisAlignmentBoundingBox& box) const override;
-	virtual bool Calculate(Ray ray, float t, Ray& scattered, Color& emited, Color& attenuation) const override;
+	virtual bool Calculate(const HitRecord& record, Ray& scattered, Color& emitted, Color& attenuation) const override;
 private:
 	shared_ptr<Material> material;
 	Point center0;
@@ -36,38 +36,35 @@ private:
 
 class XYRect : public Hitable {
 public:
-	XYRect(float x0, float x1, float y0, float y1, float z, shared_ptr<Material> material, bool normalPositive = true);
+	XYRect(float x0, float x1, float y0, float y1, float z, shared_ptr<Material> material);
 	virtual bool Hit(Ray ray, float tMin, float tMax, HitRecord& record) const override;
 	virtual bool BoundingBox(float time0, float time1, AxisAlignmentBoundingBox& box) const override;
-	virtual bool Calculate(Ray ray, float t, Ray& scattered, Color& emited, Color& attenuation) const override;
+	virtual bool Calculate(const HitRecord& record, Ray& scattered, Color& emitted, Color& attenuation) const override;
 private:
 	shared_ptr<Material> material;
 	float x0, x1, y0, y1, z;
-	float normalSign;
 };
 
 class XZRect : public Hitable {
 public:
-	XZRect(float x0, float x1, float z0, float z1, float y, shared_ptr<Material> material, bool normalPositive = true);
+	XZRect(float x0, float x1, float z0, float z1, float y, shared_ptr<Material> material);
 	virtual bool Hit(Ray ray, float tMin, float tMax, HitRecord& record) const override;
 	virtual bool BoundingBox(float time0, float time1, AxisAlignmentBoundingBox& box) const override;
-	virtual bool Calculate(Ray ray, float t, Ray& scattered, Color& emited, Color& attenuation) const override;
+	virtual bool Calculate(const HitRecord& record, Ray& scattered, Color& emitted, Color& attenuation) const override;
 private:
 	shared_ptr<Material> material;
 	float x0, x1, z0, z1, y;
-	float normalSign;
 };
 
 class YZRect : public Hitable {
 public:
-	YZRect(float y0, float y1, float z0, float z1, float x, shared_ptr<Material> material, bool normalPositive = true);
+	YZRect(float y0, float y1, float z0, float z1, float x, shared_ptr<Material> material);
 	virtual bool Hit(Ray ray, float tMin, float tMax, HitRecord& record) const override;
 	virtual bool BoundingBox(float time0, float time1, AxisAlignmentBoundingBox& box) const override;
-	virtual bool Calculate(Ray ray, float t, Ray& scattered, Color& emited, Color& attenuation) const override;
+	virtual bool Calculate(const HitRecord& record, Ray& scattered, Color& emitted, Color& attenuation) const override;
 private:
 	shared_ptr<Material> material;
 	float y0, y1, z0, z1, x;
-	float normalSign;
 };
 
 class Box : public Hitable {
@@ -75,7 +72,7 @@ public:
 	Box(Point pMin, Point pMax, shared_ptr<Material> material);
 	virtual bool Hit(Ray ray, float tMin, float tMax, HitRecord& record) const override;
 	virtual bool BoundingBox(float time0, float time1, AxisAlignmentBoundingBox& box) const override;
-	virtual bool Calculate(Ray ray, float t, Ray& scattered, Color& emited, Color& attenuation) const override;
+	virtual bool Calculate(const HitRecord& record, Ray& scattered, Color& emitted, Color& attenuation) const override;
 private:
 	HitList InitList(shared_ptr<Material> material);
 	Point pMin, pMax;

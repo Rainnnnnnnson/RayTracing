@@ -57,9 +57,9 @@ bool HitList::Hit(Ray ray, float tMin, float tMax, HitRecord& record) const {
 		if (hitable->Hit(ray, tMin, distance, tempRecord)) {
 			isHit = true;
 			distance = tempRecord.t;
+			record = tempRecord;
 		}
 	}
-	record = tempRecord;
 	return isHit;
 }
 
@@ -80,7 +80,7 @@ bool HitList::BoundingBox(float time0, float time1, AxisAlignmentBoundingBox& bo
 	return true;
 }
 
-bool HitList::Calculate(Ray ray, float t, Ray& scattered, Color& emited, Color& attenuation) const {
+bool HitList::Calculate(const HitRecord& record, Ray& scattered, Color& emitted, Color& attenuation) const {
 	throw std::exception("此函数无作用");
 }
 
@@ -152,7 +152,7 @@ public:
 		box = this->box;
 		return true;
 	}
-	virtual bool Calculate(Ray ray, float t, Ray& scattered, Color& emited, Color& attenuation) const override {
+	virtual bool Calculate(const HitRecord& record, Ray& scattered, Color& emitted, Color& attenuation) const override {
 		throw std::exception("此函数无作用");
 	}
 private:
@@ -182,7 +182,7 @@ bool BVHTree::BoundingBox(float time0, float time1, AxisAlignmentBoundingBox& bo
 	return node->BoundingBox(time0, time1, box);
 }
 
-bool BVHTree::Calculate(Ray ray, float t, Ray& scattered, Color& emited, Color& attenuation) const {
+bool BVHTree::Calculate(const HitRecord& record, Ray& scattered, Color& emitted, Color& attenuation) const {
 	throw std::exception("此函数无作用");
 }
 

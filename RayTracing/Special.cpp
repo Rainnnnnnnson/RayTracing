@@ -20,7 +20,9 @@ bool CircleTextureSphere::Hit(Ray ray, float tMin, float tMax, HitRecord& record
 		} else {
 			return false;
 		}
-		record = {const_cast<CircleTextureSphere*>(this), ray, t};
+		Point hitPoint = ray.PointAtParamter(t);
+		Vector normal = (hitPoint - center).Normalize();
+		record = {const_cast<CircleTextureSphere*>(this), t, ray, hitPoint, normal};
 		return true;
 	}
 	return false;
@@ -38,17 +40,15 @@ void GetSphereUV(Vector vec, float& u, float& v) {
 	v = (theta + PI / 2.0f) / PI;
 }
 
-bool CircleTextureSphere::Calculate(Ray ray, float t, Ray& scattered, Color& emited, Color& attenuation) const {
-	Point hitPoint = ray.PointAtParamter(t);
-	Vector normal = (hitPoint - center) / radius;
+bool CircleTextureSphere::Calculate(const HitRecord& record, Ray& scattered, Color& emitted, Color& attenuation) const {
 
-	Point target = hitPoint + normal + RamdomInUnitSphere();
-	scattered = Ray(hitPoint, (target - hitPoint).Normalize(), ray.Time());
-	emited = Color(0.0f, 0.0f, 0.0f);
+	Point target = record.hitPoint + record.normal + RamdomInUnitSphere();
+	scattered = Ray(record.hitPoint, (target - record.hitPoint).Normalize(), record.ray.Time());
+	emitted = Color(0.0f, 0.0f, 0.0f);
 
 	float u;
 	float v;
-	GetSphereUV(hitPoint - center, u, v);
+	GetSphereUV(record.normal, u, v);
 	int w = static_cast<int>(u * static_cast<float>(texture.GetWidth()));
 	int h = static_cast<int>(v * static_cast<float>(texture.GetHeight()));
 	w = std::clamp(w, 0, texture.GetWidth());

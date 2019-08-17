@@ -3,6 +3,7 @@
 #include "RGBImage.h"
 #include "Camera.h"
 #include "Application.h"
+#include "Instance.h"
 #include <cmath>
 #include <vector>
 #include <mutex>
@@ -55,31 +56,38 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 	/*
 		设置相机参数
 	*/
-	Point lookFrom(0.0f, 1.0f, -4.0f);
+	Point lookFrom(0.0f, 2.0f, -10.0f);
 	Point lookAt(0.0f, 0.0f, 0.0f);
+	Vector up(0.0f, 1.0f, 0.0f);
 	float fous = 10.0f;
 	float aperture = 0.0f;
 	float vfov = 45.0f;
-	Camera camera(lookFrom, lookAt, Vector(0.0f, 1.0f, 0.0f), vfov, aspect, aperture, fous, 0.0f, 1.0f);
+	Camera camera(lookFrom, lookAt, up, vfov, aspect, aperture, fous, 0.0f, 1.0f);
 	
 	/*
 		设置场景
 	*/
 	auto turb = make_shared<Lambertian>(make_shared<TurbulenceTexture>(10.0f, 10.0f, 2.0f, 7));
-	auto noise = make_shared<Lambertian>(make_shared<NoiseTexture>(4.0f));
-	auto lambertian = make_shared<Lambertian>(make_shared<ConstantTexture>(Color(0.5f, 0.5f, 0.5f)));
+	auto noise = make_shared<Lambertian>(make_shared<NoiseTexture>(10.0f));
+	auto lambertian = make_shared<Lambertian>(make_shared<ConstantTexture>(Color(0.7f, 0.5f, 0.3f)));
 	auto check = make_shared<Lambertian>(make_shared<CheckerTexture>(
 		make_shared<ConstantTexture>(Color(0.9f, 0.9f, 0.9f)), make_shared<ConstantTexture>(Color(0.2f, 0.3f, 0.1f)), 1.0f
 	));
-	auto metal = make_shared<Metal>(Color(0.7f, 0.7f, 0.7f), 0.3f);
+	auto metal = make_shared<Metal>(Color(0.7f, 0.7f, 0.7f), 0.03f);
 	auto dielectric = make_shared<Dielectric>(1.5f);
 
 	vector<unique_ptr<Hitable>> hitables;
-	hitables.emplace_back(make_unique<Sphere>(Point(0.0f, 0.0f, 1.0f), 0.5f, lambertian));
-	hitables.emplace_back(make_unique<Sphere>(Point(1.0f, 0.0f, 1.0f), 0.5f, metal));
-	hitables.emplace_back(make_unique<Sphere>(Point(-1.0f, 0.0f, 1.0f), 0.5f, dielectric));
-	hitables.emplace_back(make_unique<Sphere>(Point(0.0f, -100.5f, 1.0f), 100.0f, check));
+	hitables.emplace_back(make_unique<MovingSphere>(Point(-2.0f, 0.0f, 0.0f), Point(-2.0f, 0.0f, 1.0f), 0.0f, 1.0f, 0.5f, lambertian));
+	hitables.emplace_back(make_unique<Sphere>(Point(-1.0f, 0.0f, 0.0f), 0.5f, dielectric));
+	hitables.emplace_back(make_unique<Sphere>(Point(0.0f, 0.0f, 0.0f), 0.5f, lambertian));
+	hitables.emplace_back(make_unique<Sphere>(Point(1.0f, 0.0f, 0.0f), 0.5f, metal));
+	hitables.emplace_back(make_unique<Sphere>(Point(2.0f, 0.0f, 0.0f), 0.5f, turb));
 
+	
+	hitables.emplace_back(make_unique<Sphere>(Point(0.0f, -100.5f, 0.0f), 100.0f, check));
+	hitables.emplace_back(make_unique<Translate>(make_unique<RotateYAxis>(
+		make_unique<Box>(Point(-0.5f, -0.5f, -0.5f), Point(0.5f, 0.5f, 0.5f), metal), 30.0f), Vector(0.0f, 0.0f, -5.0f)
+	));
 	//auto hit = HitList(std::move(hitables));
 	auto hit = BVHTree(std::move(hitables), 0.0f, 1.0f);
 
@@ -205,14 +213,10 @@ Color GetPixelColor(Ray ray, Hitable& hits, int depth) {
 		//return Color(0.0f, 0.0f, 0.0f);
 	}
 
-	/*
-		修改hitRecord后
-		这里会比原版更清晰
-	*/
 	Ray scattered;
 	Color emitted;
 	Color attenuation;
-	record.hitable->Calculate(record.ray, record.t, scattered, emitted, attenuation);
+	record.hitable->Calculate(record, scattered, emitted, attenuation);
 	if (depth >= 0) {
 		return emitted + attenuation * GetPixelColor(scattered, hits, depth - 1);
 	} else {

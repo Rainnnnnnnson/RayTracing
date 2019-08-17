@@ -11,7 +11,7 @@ CheckerTexture::CheckerTexture(shared_ptr<Texture> odd, shared_ptr<Texture> even
 	: odd(std::move(odd)), even(std::move(even)), distance(distance) {}
 
 Color CheckerTexture::Value(Point p) const {
-	float sines = sin(PI * distance * p.X()) * sin(PI * distance * p.Y()) * sin(PI * distance * p.Z());
+	float sines = sin(PI * p.X() / distance) * sin(PI * p.Y() / distance) * sin(PI * p.Z() / distance);
 	if (sines < 0.0F) {
 		return odd->Value(p);
 	} else {
