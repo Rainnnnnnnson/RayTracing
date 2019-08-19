@@ -1,10 +1,10 @@
 #include "Math.h"
-#include "Geometry.h"
-#include "RGBImage.h"
-#include "Camera.h"
-#include "Application.h"
-#include "Instance.h"
-#include "Special.h"
+#include "../RayTracing/Geometry.h"
+#include "../RayTracing/RGBImage.h"
+#include "../RayTracing/Camera.h"
+#include "../RayTracing/Application.h"
+#include "../RayTracing/Instance.h"
+#include "../RayTracing/Special.h"
 #include <cmath>
 #include <vector>
 #include <mutex>
@@ -57,40 +57,29 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 	/*
 		设置相机参数
 	*/
-	Point lookFrom(0.0f, 2.0f, -10.0f);
+	Point lookFrom(0.0f, 0.0f, -7.0f);
 	Point lookAt(0.0f, 0.0f, 0.0f);
 	Vector up(0.0f, 1.0f, 0.0f);
 	float fous = 10.0f;
 	float aperture = 0.0f;
 	float vfov = 45.0f;
 	Camera camera(lookFrom, lookAt, up, vfov, aspect, aperture, fous, 0.0f, 1.0f);
-	
-	/*
-		设置场景
-	*/
-	auto turb = make_shared<Lambertian>(make_shared<TurbulenceTexture>(10.0f, 10.0f, 2.0f, 7));
-	auto noise = make_shared<Lambertian>(make_shared<NoiseTexture>(10.0f));
-	auto lambertian = make_shared<Lambertian>(make_shared<ConstantTexture>(Color(0.9f, 0.5f, 0.3f)));
-	auto check = make_shared<Lambertian>(make_shared<CheckerTexture>(
-		make_shared<ConstantTexture>(Color(0.9f, 0.9f, 0.9f)), make_shared<ConstantTexture>(Color(0.2f, 0.3f, 0.1f)), 1.0f
-	));
-	auto metal = make_shared<Metal>(Color(0.7f, 0.7f, 0.7f), 0.03f);
-	auto dielectric = make_shared<Dielectric>(1.5f);
-	auto earthImage = application.GetImage(L"../earth.jpg");
+
+	auto white = make_shared<ConstantTexture>(Color(0.73f, 0.73f, 0.73f));
+	auto red = make_shared<ConstantTexture>(Color(0.65f, 0.05f, 0.05f));
+	auto green = make_shared<ConstantTexture>(Color(0.15f, 0.45f, 0.15f));
+	auto blue = make_shared<ConstantTexture>(Color(0.12f, 0.12f, 0.45f));
+	auto light = make_shared<ConstantTexture>(Color(10.0f, 10.0f, 10.0f));
 
 	vector<unique_ptr<Hitable>> hitables;
-	hitables.emplace_back(make_unique<MovingSphere>(Point(-2.0f, 0.5f, 0.0f), Point(-2.0f, 0.5f, 1.0f), 0.0f, 1.0f, 0.5f, lambertian));
-	hitables.emplace_back(make_unique<Sphere>(Point(-1.0f, 0.5f, 0.0f), 0.5f, dielectric));
-	hitables.emplace_back(make_unique<Sphere>(Point(0.0f, 0.5f, 0.0f), 0.5f, lambertian));
-	hitables.emplace_back(make_unique<Sphere>(Point(1.0f, 0.5f, 0.0f), 0.5f, metal));
-	hitables.emplace_back(make_unique<Sphere>(Point(2.0f, 0.5f, 0.0f), 0.5f, turb));
-	hitables.emplace_back(make_unique<CircleTextureSphere>(Point(3.0f, 0.5f, 0.0f), 0.5f, std::move(earthImage)));
-
-	hitables.emplace_back(make_unique<Sphere>(Point(0.0f, -100.0f, 0.0f), 100.0f, check));
-	hitables.emplace_back(make_unique<Translate>(make_unique<RotateYAxis>(
-		make_unique<Box>(Point(-0.5f, -0.5f, -0.5f), Point(0.5f, 0.5f, 0.5f), metal), 30.0f), Vector(0.0f, 0.5f, -5.0f)
-	));
-
+	hitables.emplace_back(make_unique<FlipNormal>(make_unique<YZRect>(-2.0f, 2.0f, -5.0f, 2.0f, -2.0f, make_shared<Lambertian>(green))));
+	hitables.emplace_back(make_unique<XYRect>(-2.0f, 2.0f, -2.0, 2.0f, 2.0f, make_shared<Lambertian>(blue)));
+	hitables.emplace_back(make_unique<YZRect>(-2.0f, 2.0f, -5.0, 2.0f, 2.0f, make_shared<Lambertian>(red)));
+	hitables.emplace_back(make_unique<FlipNormal>(make_unique<XZRect>(-2.0f, 2.0f, -5.0f, 2.0f, -2.0f, make_shared<Lambertian>(white))));
+	hitables.emplace_back(make_unique<XZRect>(-2.0f, 2.0f, -5.0f, 2.0f, 2.0f, make_shared<Lambertian>(white)));
+	hitables.emplace_back(make_unique<XZRect>(-0.75f, 0.75f, -0.75f, 0.75f, 1.99f, make_shared<DiffuseLight>(light)));
+	hitables.emplace_back(make_unique<Sphere>(Point(1.1f, -1.25f, -1.1f), 0.75f, make_shared<Dielectric>(1.5f)));
+	hitables.emplace_back(make_unique<Sphere>(Point(-1.0f, -1.25f, 0.5f), 0.75f, make_shared<Metal>(Color(1.0f, 1.0f, 1.0f), 0.0f)));
 	auto hit = BVHTree(std::move(hitables), 0.0f, 1.0f);
 
 	/*
@@ -119,11 +108,11 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 						Color singleColor = threadSingleImage.GetImagePoint(x, y);
 						/*
 							需要将颜色范围压缩至[0,1]
-						*/
 						for (int index = 0; index < 3; index++) {
 							singleColor[index] = std::clamp(singleColor[index], 0.0f, 1.0f);
 							singleColor[index] = sqrt(singleColor[index]);
 						}
+						*/
 						Color newColor = colorImage.GetImagePoint(x, y) + singleColor;
 						colorImage.SetImagePoint(x, y, newColor);
 					}
@@ -208,11 +197,13 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 Color GetPixelColor(Ray ray, Hitable& hits, int depth) {
 	HitRecord record;
 	if (!hits.Hit(ray, 0.001f, FLT_MAX, record)) {
+		/*
 		Vector unit = ray.Direction().Normalize();
 		float t = 0.5f * (unit.Y() + 1.0f);
 		Vector v = (1.0f - t) * Vector(1.0f, 1.0f, 1.0f) + t * Vector(0.5f, 0.7f, 1.0f);
 		return Color(v.X(), v.Y(), v.Z());
-		//return Color(0.0f, 0.0f, 0.0f);
+		*/
+		return Color(0.0f, 0.0f, 0.0f);
 	}
 
 	Ray scattered;

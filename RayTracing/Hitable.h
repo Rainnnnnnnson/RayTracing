@@ -13,9 +13,9 @@ class Hitable;
 /* 
 	hitable  被击中物体 
 	t        距离
-	ray      光线
+	ray      光线   需要保证每次都是单位向量
 	hitPoint 击中点
-	normal   法线
+	normal   法线   需要保证每次都是单位向量
 */
 struct HitRecord {
 	Hitable* hitable = nullptr;

@@ -87,12 +87,3 @@ bool DiffuseLight::Calculate(const HitRecord& record, Ray& scattered, Color& emi
 	emitted = emit->Value(record.hitPoint);
 	return false;
 }
-
-Iostropic::Iostropic(shared_ptr<Texture> albedo) : albedo(std::move(albedo)) {}
-
-bool Iostropic::Calculate(const HitRecord& record, Ray& scattered, Color& emitted, Color& attenuation) const {
-	scattered = Ray(record.hitPoint, RamdomInUnitSphere(), record.ray.Time());
-	emitted = Color(0.0f, 0.0f, 0.0f);
-	attenuation = albedo->Value(record.hitPoint);
-	return true;
-}

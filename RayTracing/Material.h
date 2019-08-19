@@ -49,11 +49,3 @@ public:
 private:
 	shared_ptr<Texture> emit;
 };
-
-class Iostropic : public Material {
-public:
-	Iostropic(shared_ptr<Texture> albedo);
-	virtual bool Calculate(const HitRecord& record, Ray& scattered, Color& emitted, Color& attenuation) const override;
-private:
-	shared_ptr<Texture> albedo;
-};
