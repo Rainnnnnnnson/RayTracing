@@ -2,14 +2,16 @@
 #include <windows.h>
 #include <gdiplus.h>
 #include"RGBImage.h"
+#include <string>
+using std::wstring;
 #pragma comment (lib,"Gdiplus.lib")
 
 class Application {
 public:
 	Application(int width, int height);
 	~Application();
-	RGBImage GetImage(const wchar_t* fileName) const;
-	void SetWindowsText(const wchar_t* text);
+	RGBImage GetImage(const wstring& fileName) const;
+	void SetWindowsText(const wstring& text);
 	bool Continue();
 	void CopyInBuffer(RGBImage image);
 private:

@@ -212,7 +212,6 @@ Color GetPixelColor(Ray ray, Hitable& hits, int depth) {
 		float t = 0.5f * (unit.Y() + 1.0f);
 		Vector v = (1.0f - t) * Vector(1.0f, 1.0f, 1.0f) + t * Vector(0.5f, 0.7f, 1.0f);
 		return Color(v.X(), v.Y(), v.Z());
-		//return Color(0.0f, 0.0f, 0.0f);
 	}
 
 	Ray scattered;

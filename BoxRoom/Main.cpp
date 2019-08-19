@@ -106,13 +106,6 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 				for (int y = 0; y < height; y++) {
 					for (int x = 0; x < width; x++) {
 						Color singleColor = threadSingleImage.GetImagePoint(x, y);
-						/*
-							需要将颜色范围压缩至[0,1]
-						for (int index = 0; index < 3; index++) {
-							singleColor[index] = std::clamp(singleColor[index], 0.0f, 1.0f);
-							singleColor[index] = sqrt(singleColor[index]);
-						}
-						*/
 						Color newColor = colorImage.GetImagePoint(x, y) + singleColor;
 						colorImage.SetImagePoint(x, y, newColor);
 					}
@@ -197,12 +190,6 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 Color GetPixelColor(Ray ray, Hitable& hits, int depth) {
 	HitRecord record;
 	if (!hits.Hit(ray, 0.001f, FLT_MAX, record)) {
-		/*
-		Vector unit = ray.Direction().Normalize();
-		float t = 0.5f * (unit.Y() + 1.0f);
-		Vector v = (1.0f - t) * Vector(1.0f, 1.0f, 1.0f) + t * Vector(0.5f, 0.7f, 1.0f);
-		return Color(v.X(), v.Y(), v.Z());
-		*/
 		return Color(0.0f, 0.0f, 0.0f);
 	}
 

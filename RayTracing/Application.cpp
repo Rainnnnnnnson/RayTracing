@@ -49,8 +49,8 @@ Application::~Application() {
 	Gdiplus::GdiplusShutdown(gdiplusToken);
 }
 
-RGBImage Application::GetImage(const wchar_t* fileName) const {
-	auto bitMap = Gdiplus::Bitmap::FromFile(fileName);
+RGBImage Application::GetImage(const wstring& fileName) const {
+	auto bitMap = Gdiplus::Bitmap::FromFile(fileName.c_str());
 	assertion(bitMap->GetWidth() != 0 && bitMap->GetHeight() != 0);
 	int width = static_cast<int>(bitMap->GetWidth());
 	int height = static_cast<int>(bitMap->GetHeight());
@@ -65,8 +65,8 @@ RGBImage Application::GetImage(const wchar_t* fileName) const {
 	return image;
 }
 
-void Application::SetWindowsText(const wchar_t* text) {
-	SetWindowText(hwnd, text);
+void Application::SetWindowsText(const wstring& text) {
+	SetWindowText(hwnd, text.c_str());
 }
 
 bool Application::Continue() {
