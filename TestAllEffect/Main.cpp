@@ -57,11 +57,11 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 	/*
 		设置相机参数
 	*/
-	Point lookFrom(-250.0f, 250.0f, -750.0f);
+	Point lookFrom(-100.0f, 250.0f, -600.0f);
 	Point lookAt(250.0f, 250.0f, 250.0f);
 	Vector up(0.0f, 1.0f, 0.0f);
-	float fous = 1000.0f;
-	float aperture = 1.0f;
+	float fous = 800.0f;
+	float aperture = 10.0f;
 	float vfov = 45.0f;
 	Camera camera(lookFrom, lookAt, up, vfov, aspect, aperture, fous, 0.0f, 1.0f);
 
@@ -138,13 +138,13 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 		地球
 	*/
 	auto earthImage = application.GetImage(L"../earth.jpg");
-	hitables.emplace_back(make_unique<CircleTextureSphere>(Point(400.0f, 200.0f, 400.0f), 100.0f, std::move(earthImage)));
+	hitables.emplace_back(make_unique<CircleTextureSphere>(Point(400.0f, 250.0f, 500.0f), 100.0f, std::move(earthImage)));
 
 	/*
 		纹理球
 	*/
 	auto noise = make_shared<Lambertian>(make_shared<TurbulenceTexture>(0.1f, 0.1f, 5.0f, 7.0f));
-	hitables.emplace_back(make_unique<Sphere>(Point(220.0f, 350.0f, 400.0f), 80.0f, noise));
+	hitables.emplace_back(make_unique<Sphere>(Point(220.0f, 350.0f, 350.0f), 80.0f, noise));
 
 	/*
 		很多球
