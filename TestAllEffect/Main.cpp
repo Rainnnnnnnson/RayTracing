@@ -121,7 +121,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 		玻璃球里面是体积雾
 		效果是蓝色的球体外表有玻璃效果
 	*/
-	Point sphereCenter = Point(300.0f, 270.0f, -50.0f);
+	Point sphereCenter = Point(400.0f, 170.0f, 150.0f);
 	float sphereR = 70.0f;
 	auto sphere1 = make_unique<Sphere>(sphereCenter, sphereR, make_shared<Dielectric>(1.5f));
 	hitables.emplace_back(std::move(sphere1));
