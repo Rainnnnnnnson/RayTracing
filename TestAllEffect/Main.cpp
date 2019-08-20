@@ -114,7 +114,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 	/*
 		Ω Ù«Ú
 	*/
-	auto metal = make_shared<Metal>(Color(0.8f, 0.8f, 0.9f), 10.0f);
+	auto metal = make_shared<Metal>(Color(0.8f, 0.8f, 0.9f), 1.0f);
 	hitables.emplace_back(make_unique<Sphere>(Point(0.0f, 150.0f, 250.0f), 50.0f, metal));
 
 	/*
