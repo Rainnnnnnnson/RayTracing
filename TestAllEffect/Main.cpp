@@ -57,29 +57,107 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 	/*
 		设置相机参数
 	*/
-	Point lookFrom(0.0f, 0.0f, -7.0f);
-	Point lookAt(0.0f, 0.0f, 0.0f);
+	Point lookFrom(-250.0f, 250.0f, -750.0f);
+	Point lookAt(250.0f, 250.0f, 250.0f);
 	Vector up(0.0f, 1.0f, 0.0f);
-	float fous = 10.0f;
-	float aperture = 0.0f;
+	float fous = 1000.0f;
+	float aperture = 1.0f;
 	float vfov = 45.0f;
 	Camera camera(lookFrom, lookAt, up, vfov, aspect, aperture, fous, 0.0f, 1.0f);
 
-	auto white = make_shared<ConstantTexture>(Color(0.73f, 0.73f, 0.73f));
-	auto red = make_shared<ConstantTexture>(Color(0.65f, 0.05f, 0.05f));
-	auto green = make_shared<ConstantTexture>(Color(0.15f, 0.45f, 0.15f));
-	auto blue = make_shared<ConstantTexture>(Color(0.12f, 0.12f, 0.45f));
-	auto light = make_shared<ConstantTexture>(Color(10.0f, 10.0f, 10.0f));
-
+	/*
+		一开始存放所有Hitable的容器
+	*/
 	vector<unique_ptr<Hitable>> hitables;
-	hitables.emplace_back(make_unique<FlipNormal>(make_unique<YZRect>(-2.0f, 2.0f, -5.0f, 2.0f, -2.0f, make_shared<Lambertian>(green))));
-	hitables.emplace_back(make_unique<XYRect>(-2.0f, 2.0f, -2.0, 2.0f, 2.0f, make_shared<Lambertian>(blue)));
-	hitables.emplace_back(make_unique<YZRect>(-2.0f, 2.0f, -5.0, 2.0f, 2.0f, make_shared<Lambertian>(red)));
-	hitables.emplace_back(make_unique<FlipNormal>(make_unique<XZRect>(-2.0f, 2.0f, -5.0f, 2.0f, -2.0f, make_shared<Lambertian>(white))));
-	hitables.emplace_back(make_unique<XZRect>(-2.0f, 2.0f, -5.0f, 2.0f, 2.0f, make_shared<Lambertian>(white)));
-	hitables.emplace_back(make_unique<XZRect>(-0.75f, 0.75f, -0.75f, 0.75f, 1.99f, make_shared<DiffuseLight>(light)));
-	hitables.emplace_back(make_unique<Sphere>(Point(1.1f, -1.25f, -1.1f), 0.75f, make_shared<Dielectric>(1.5f)));
-	hitables.emplace_back(make_unique<Sphere>(Point(-1.0f, -1.25f, 0.5f), 0.75f, make_shared<Metal>(Color(1.0f, 1.0f, 1.0f), 0.0f)));
+
+	/*
+		所有地板存放到一起
+		单独拿一个BVHTree装
+	*/
+	vector<unique_ptr<Hitable>> someBoxs;
+	auto ground = make_shared<Lambertian>(make_shared<ConstantTexture>(Color(0.48f, 0.83f, 0.53f)));
+	int count = 10;
+	for (int i = 0; i < count; i++) {
+		for (int j = 0; j < count; j++) {
+			const float w = 100.0f;
+			float x0 = -250.0f + static_cast<float>(i) * w;
+			float z0 = -250.0f + static_cast<float>(j) * w;
+			float x1 = x0 + w;
+			float z1 = z0 + w;
+			float y0 = -0.01f;
+			float y1 = 100.0f * Random();
+			someBoxs.emplace_back(make_unique<Box>(Point(x0, y0, z0), Point(x1, y1, z1), ground));
+		}
+	}
+	hitables.emplace_back(make_unique<BVHTree>(std::move(someBoxs), 0.0f, 1.0f));
+
+	/*
+		顶部的灯光
+	*/
+	auto light = make_shared<DiffuseLight>(make_shared<ConstantTexture>(Color(7.0f, 7.0f, 7.0f)));
+	hitables.emplace_back(make_unique<XZRect>(100.0f, 400.0f, 100.0f, 400.0f, 550.0f, light));
+
+	/*
+		移动的球
+	*/
+	Point moveFrom(400.0f,400.0f,200.0f);
+	Point moveTo(450.0f, 400.0f, 200.0f);
+	auto moveMaterial = make_shared<Lambertian>(make_shared<ConstantTexture>(Color(0.7f, 0.3f, 0.1f)));
+	hitables.emplace_back(make_unique<MovingSphere>(moveFrom, moveTo, 0.0f, 1.0f, 50.0f, moveMaterial));
+
+	/*
+		玻璃球
+	*/
+	auto dielectric = make_shared<Dielectric>(1.5f);
+	hitables.emplace_back(make_unique<Sphere>(Point(100.0f, 150.0f, 45.0f), 50.0f, dielectric));
+
+	/*
+		金属球
+	*/
+	auto metal = make_shared<Metal>(Color(0.8f, 0.8f, 0.9f), 10.0f);
+	hitables.emplace_back(make_unique<Sphere>(Point(0.0f, 150.0f, 250.0f), 50.0f, metal));
+
+	/*
+		玻璃球里面是体积雾
+		效果是蓝色的球体外表有玻璃效果
+	*/
+	Point sphereCenter = Point(300.0f, 270.0f, -50.0f);
+	float sphereR = 70.0f;
+	auto sphere1 = make_unique<Sphere>(sphereCenter, sphereR, make_shared<Dielectric>(1.5f));
+	hitables.emplace_back(std::move(sphere1));
+	auto sphere2 = make_unique<Sphere>(sphereCenter, sphereR, nullptr);
+	hitables.emplace_back(make_unique<ConstantMedium>(std::move(sphere2), 0.2f, make_shared<ConstantTexture>(Color(0.2f, 0.4f, 0.9f))));
+
+	/*
+		场景包围着一格大的体积雾
+	*/
+	auto boundary = make_unique<Sphere>(Point(0.0f, 0.0f, 0.0f), 5000.0f, nullptr);
+	hitables.emplace_back(make_unique<ConstantMedium>(std::move(boundary), 0.0001f, make_shared<ConstantTexture>(Color(1.0f, 1.0f, 1.0f))));
+
+	/*
+		地球
+	*/
+	auto earthImage = application.GetImage(L"../earth.jpg");
+	hitables.emplace_back(make_unique<CircleTextureSphere>(Point(400.0f, 200.0f, 400.0f), 100.0f, std::move(earthImage)));
+
+	/*
+		纹理球
+	*/
+	auto noise = make_shared<Lambertian>(make_shared<TurbulenceTexture>(0.1f, 0.1f, 5.0f, 7.0f));
+	hitables.emplace_back(make_unique<Sphere>(Point(220.0f, 350.0f, 400.0f), 80.0f, noise));
+
+	/*
+		很多球
+	*/
+	vector<unique_ptr<Hitable>> someSphere;
+	auto white = make_shared<Lambertian>(make_shared<ConstantTexture>(Color(0.73f, 0.73f, 0.73f)));
+	for (int k = 0; k < 1000; k++) {
+		Point center(165.0f * Random(), 165.0f * Random(), 165.0f * Random());
+		someSphere.emplace_back(make_unique<Sphere>(center, 10.0f, white));
+	}
+	Vector direction(-100.0f, 270.0f, 395.0f);
+	hitables.emplace_back(make_unique<Translate>(make_unique<RotateYAxis>(make_unique<BVHTree>(std::move(someSphere), 0.0f, 1.0f), 15.0f), direction));
+
 	auto hit = BVHTree(std::move(hitables), 0.0f, 1.0f);
 
 	/*

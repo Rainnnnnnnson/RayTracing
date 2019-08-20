@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RayTracing", "RayTracing\Ra
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BoxRoom", "BoxRoom\BoxRoom.vcxproj", "{D42B4C6A-BB6B-43DF-AD53-9AB26A51ACF1}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestAllEffect", "TestAllEffect\TestAllEffect.vcxproj", "{678B563F-909B-4ECC-B3B3-A0E592CB72EC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -31,6 +33,14 @@ Global
 		{D42B4C6A-BB6B-43DF-AD53-9AB26A51ACF1}.Release|x64.Build.0 = Release|x64
 		{D42B4C6A-BB6B-43DF-AD53-9AB26A51ACF1}.Release|x86.ActiveCfg = Release|Win32
 		{D42B4C6A-BB6B-43DF-AD53-9AB26A51ACF1}.Release|x86.Build.0 = Release|Win32
+		{678B563F-909B-4ECC-B3B3-A0E592CB72EC}.Debug|x64.ActiveCfg = Debug|x64
+		{678B563F-909B-4ECC-B3B3-A0E592CB72EC}.Debug|x64.Build.0 = Debug|x64
+		{678B563F-909B-4ECC-B3B3-A0E592CB72EC}.Debug|x86.ActiveCfg = Debug|Win32
+		{678B563F-909B-4ECC-B3B3-A0E592CB72EC}.Debug|x86.Build.0 = Debug|Win32
+		{678B563F-909B-4ECC-B3B3-A0E592CB72EC}.Release|x64.ActiveCfg = Release|x64
+		{678B563F-909B-4ECC-B3B3-A0E592CB72EC}.Release|x64.Build.0 = Release|x64
+		{678B563F-909B-4ECC-B3B3-A0E592CB72EC}.Release|x86.ActiveCfg = Release|Win32
+		{678B563F-909B-4ECC-B3B3-A0E592CB72EC}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
