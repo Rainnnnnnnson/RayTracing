@@ -20,7 +20,7 @@ Vector Reflect(Vector v, Vector normal) {
 
 bool Metal::Calculate(const HitRecord& record, Ray& scattered, Color& emitted, Color& attenuation) const {
 	Vector reflected = Reflect(record.ray.Direction(), record.normal);
-	scattered = Ray{record.hitPoint, reflected + RamdomInUnitSphere() * fuzzier, record.ray.Time()};
+	scattered = Ray(record.hitPoint, reflected + RamdomInUnitSphere() * fuzzier, record.ray.Time());
 	emitted = Color(0.0f, 0.0f, 0.0f);
 	attenuation = albedo;
 	return scattered.Direction().Dot(record.normal) > 0;

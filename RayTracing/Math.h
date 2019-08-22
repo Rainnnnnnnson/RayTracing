@@ -124,4 +124,7 @@ private:
 	float time;
 };
 
+/*
+	该返回的不是单位向量
+*/
 Vector RamdomInUnitSphere();

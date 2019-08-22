@@ -246,5 +246,5 @@ Vector RamdomInUnitSphere() {
 	do {
 		p = 2.0f * Point(Random(), Random(), Random()) - Point(1.0f, 1.0f, 1.0f);
 	} while (p.Length() >= 1.0f);
-	return p.Normalize();
+	return p;
 }

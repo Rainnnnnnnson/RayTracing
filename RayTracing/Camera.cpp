@@ -28,7 +28,7 @@ Vector RamdomInUnitDisk() {
 }
 
 Ray Camera::GetRay(float u, float v) const {
-	Vector rand = RamdomInUnitSphere() * lensRadius;
+	Vector rand = RamdomInUnitDisk() * lensRadius;
 	Vector lensOffest = this->u * rand.X() + this->v * rand.Y();
 	float time = time0 + Random() * (time1 - time0);
 	return Ray(origin + lensOffest, (lowerLeftCorner - origin + horizontal * u + vertical * v - lensOffest).Normalize(), time);
