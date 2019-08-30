@@ -10,6 +10,8 @@ public:
 		通过 顶点 得到值
 	*/
 	virtual Color Value(Point p) const = 0;
+
+	virtual ~Texture() = default;
 };
 
 class ConstantTexture : public Texture {

@@ -15,6 +15,8 @@ public:
 		attenuation 递归时的衰弱系数
 	*/
 	virtual bool Calculate(const HitRecord& record, Ray& scattered, Color& emitted, Color& attenuation) const = 0;
+
+	virtual ~Material() = default;
 };
 
 class Lambertian : public Material {
