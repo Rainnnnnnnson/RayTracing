@@ -24,7 +24,7 @@ NoiseTexture::NoiseTexture(float scale) : scale(scale) {}
 array<Vector, 256> InitVectorRandomArray() {
 	array<Vector, 256> result;
 	for (auto& v : result) {
-		v = RamdomInUnitSphere();
+		v = RandomInUnitSphere();
 	}
 	return result;
 }

@@ -241,7 +241,7 @@ float Ray::Time() const {
 	return time;
 }
 
-Vector RamdomInUnitSphere() {
+Vector RandomInUnitSphere() {
 	Vector p;
 	do {
 		p = 2.0f * Point(Random(), Random(), Random()) - Point(1.0f, 1.0f, 1.0f);

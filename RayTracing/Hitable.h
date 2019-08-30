@@ -74,6 +74,8 @@ public:
 		emited 不受影响 bool的影响
 	*/
 	virtual bool Calculate(const HitRecord& record, Ray& scattered, Color& emitted, Color& attenuation) const = 0;
+
+	//virtual ~Hitable() = default;
 };
 
 /*

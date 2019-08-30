@@ -73,8 +73,8 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
 	vector<unique_ptr<Hitable>> hitables;
 	hitables.emplace_back(make_unique<FlipNormal>(make_unique<YZRect>(-2.0f, 2.0f, -5.0f, 2.0f, -2.0f, make_shared<Lambertian>(green))));
-	hitables.emplace_back(make_unique<XYRect>(-2.0f, 2.0f, -2.0, 2.0f, 2.0f, make_shared<Lambertian>(blue)));
-	hitables.emplace_back(make_unique<YZRect>(-2.0f, 2.0f, -5.0, 2.0f, 2.0f, make_shared<Lambertian>(red)));
+	hitables.emplace_back(make_unique<XYRect>(-2.0f, 2.0f, -2.0f, 2.0f, 2.0f, make_shared<Lambertian>(blue)));
+	hitables.emplace_back(make_unique<YZRect>(-2.0f, 2.0f, -5.0f, 2.0f, 2.0f, make_shared<Lambertian>(red)));
 	hitables.emplace_back(make_unique<FlipNormal>(make_unique<XZRect>(-2.0f, 2.0f, -5.0f, 2.0f, -2.0f, make_shared<Lambertian>(white))));
 	hitables.emplace_back(make_unique<XZRect>(-2.0f, 2.0f, -5.0f, 2.0f, 2.0f, make_shared<Lambertian>(white)));
 	hitables.emplace_back(make_unique<XZRect>(-0.75f, 0.75f, -0.75f, 0.75f, 1.99f, make_shared<DiffuseLight>(light)));

@@ -3,7 +3,7 @@
 Lambertian::Lambertian(shared_ptr<Texture> albedo) : albedo(std::move(albedo)) {}
 
 bool Lambertian::Calculate(const HitRecord& record, Ray& scattered, Color& emitted, Color& attenuation) const {
-	Point target = record.hitPoint + record.normal + RamdomInUnitSphere();
+	Point target = record.hitPoint + record.normal + RandomInUnitSphere();
 	scattered = Ray(record.hitPoint, (target - record.hitPoint).Normalize(), record.ray.Time());
 	emitted = Color(0.0f, 0.0f, 0.0f);
 	attenuation = albedo->Value(record.hitPoint);
@@ -20,7 +20,7 @@ Vector Reflect(Vector v, Vector normal) {
 
 bool Metal::Calculate(const HitRecord& record, Ray& scattered, Color& emitted, Color& attenuation) const {
 	Vector reflected = Reflect(record.ray.Direction(), record.normal);
-	scattered = Ray(record.hitPoint, reflected + RamdomInUnitSphere() * fuzzier, record.ray.Time());
+	scattered = Ray(record.hitPoint, reflected + RandomInUnitSphere() * fuzzier, record.ray.Time());
 	emitted = Color(0.0f, 0.0f, 0.0f);
 	attenuation = albedo;
 	return scattered.Direction().Dot(record.normal) > 0;

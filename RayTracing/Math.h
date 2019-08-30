@@ -127,4 +127,4 @@ private:
 /*
 	该返回的不是单位向量
 */
-Vector RamdomInUnitSphere();
+Vector RandomInUnitSphere();

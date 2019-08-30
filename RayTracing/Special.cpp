@@ -46,7 +46,7 @@ void GetSphereUV(Vector vec, float& u, float& v) {
 
 bool CircleTextureSphere::Calculate(const HitRecord& record, Ray& scattered, Color& emitted, Color& attenuation) const {
 
-	Point target = record.hitPoint + record.normal + RamdomInUnitSphere();
+	Point target = record.hitPoint + record.normal + RandomInUnitSphere();
 	scattered = Ray(record.hitPoint, (target - record.hitPoint).Normalize(), record.ray.Time());
 	emitted = Color(0.0f, 0.0f, 0.0f);
 
@@ -107,7 +107,7 @@ bool ConstantMedium::BoundingBox(float time0, float time1, AxisAlignmentBounding
 }
 
 bool ConstantMedium::Calculate(const HitRecord& record, Ray& scattered, Color& emitted, Color& attenuation) const {
-	scattered = Ray(record.hitPoint, RamdomInUnitSphere().Normalize(), record.ray.Time());
+	scattered = Ray(record.hitPoint, RandomInUnitSphere().Normalize(), record.ray.Time());
 	emitted = Color(0.0f, 0.0f, 0.0f);
 	attenuation = texture->Value(record.hitPoint);
 	return true;
